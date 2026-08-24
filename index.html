@@ -142,6 +142,32 @@
     margin-bottom: 6px;
   }
 
+  /* ---------- Tab nav ---------- */
+  .tabbar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--border-strong);
+  }
+  .tabbar a {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: var(--ink-muted);
+    padding: 10px 4px;
+    margin-bottom: -1px;
+    border-bottom: 2px solid transparent;
+  }
+  .tabbar a:hover { color: var(--ink-primary); }
+  .tabbar a.active {
+    color: var(--ink-primary);
+    border-bottom-color: var(--accent);
+  }
+  .tabbar a + a { margin-left: 18px; }
+
   /* ---------- Sections ---------- */
   section { margin-bottom: 44px; }
   .section-head {
@@ -467,6 +493,11 @@
     </div>
   </div>
 
+  <nav class="tabbar">
+    <a href="index.html" class="active">Squad Watch</a>
+    <a href="compare.html">Head-to-Head</a>
+  </nav>
+
   <section>
     <div class="section-head">
       <h2>Standings</h2>
@@ -533,8 +564,7 @@
   <footer>
     Data from the official Fantasy Premier League API. Season just underway —
     only <span id="gw-count"></span> gameweek played so far, so read these as early signal, not settled patterns.
-    Rerun the fetch script after future gameweeks to refresh.<br><br>
-    Want to compare two managers head-to-head? <a href="compare.html">Open Head-to-Head</a>.
+    Rerun the fetch script after future gameweeks to refresh.
   </footer>
 
 </div>

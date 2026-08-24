@@ -141,6 +141,32 @@
     margin-bottom: 6px;
   }
 
+  /* ---------- Tab nav ---------- */
+  .tabbar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--border-strong);
+  }
+  .tabbar a {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: var(--ink-muted);
+    padding: 10px 4px;
+    margin-bottom: -1px;
+    border-bottom: 2px solid transparent;
+  }
+  .tabbar a:hover { color: var(--ink-primary); }
+  .tabbar a.active {
+    color: var(--ink-primary);
+    border-bottom-color: var(--accent);
+  }
+  .tabbar a + a { margin-left: 18px; }
+
   /* ---------- Picker ---------- */
   .picker {
     display: grid;
@@ -458,6 +484,11 @@
     </div>
   </div>
 
+  <nav class="tabbar">
+    <a href="index.html">Squad Watch</a>
+    <a href="compare.html" class="active">Head-to-Head</a>
+  </nav>
+
   <div class="picker">
     <select id="pick-a" aria-label="Manager A"></select>
     <span class="vs">VS</span>
@@ -481,8 +512,7 @@
   </section>
 
   <footer>
-    Same data as <a href="index.html">Squad Watch</a> — rerun the fetch script after future
-    gameweeks to bring in more history here too.
+    Rerun the fetch script after future gameweeks to bring in more history here too.
   </footer>
 
 </div>
