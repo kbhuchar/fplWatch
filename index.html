@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SF Ke Baap Squad Watch</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -227,7 +232,6 @@
     color: var(--ink-muted);
     font-size: 1.05rem;
   }
-  .standings-row.you { background: var(--accent-soft); }
   .standings-row .who .name { font-weight: 600; }
   .standings-row .who .team {
     color: var(--ink-muted);
@@ -474,11 +478,16 @@
   footer a { color: var(--accent-ink); }
 
   @media (max-width: 480px) {
+    html { font-size: 17px; }
+    .wrap { padding: 20px 16px 64px; }
     .standings-row { grid-template-columns: 26px 1fr auto; }
     .standings-row .rk { display: none; }
     .owned-row { grid-template-columns: 96px 1fr 30px; }
+    .tabbar a { font-size: 0.95rem; padding: 12px 4px; }
   }
 </style>
+</head>
+<body>
 
 <div class="wrap">
 
@@ -583,17 +592,16 @@
   document.getElementById('gen-date').textContent =
     'Generated ' + new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
-  const KARTIKAY = 'Kartikay Bhuchar';
   const firstName = n => n.split(' ')[0];
 
   // ---- Standings ----
   const standingsEl = document.getElementById('standings');
   DATA.standings.forEach(row => {
     const div = document.createElement('div');
-    div.className = 'standings-row' + (row.manager === KARTIKAY ? ' you' : '');
+    div.className = 'standings-row';
     div.innerHTML = `
       <span class="rank">${row.rank}</span>
-      <span class="who"><span class="name">${row.manager}${row.manager === KARTIKAY ? ' (you)' : ''}</span><br>
+      <span class="who"><span class="name">${row.manager}</span><br>
         <span class="team">${row.team_name}</span></span>
       <span class="pts"><span class="lbl">Pts</span>${row.total_points}</span>
       <span class="rk">Overall ~${row.overall_rank.toLocaleString('en-GB')}</span>
@@ -686,7 +694,7 @@
       div.className = 'captain-group';
       div.innerHTML = `
         <span class="badge">${captain} · ${info.team}</span>
-        <span class="who">${info.managers.map(m => m === KARTIKAY ? `<b>${m}</b>` : m).join(', ')}</span>
+        <span class="who">${info.managers.join(', ')}</span>
         <span class="count">${info.managers.length}/${totalManagers} managers</span>
       `;
       capEl.appendChild(div);
@@ -702,7 +710,7 @@
     const chipKey = t.active_chip ? (CHIP_CLASS[t.active_chip] || 'none') : 'none';
     const chipLabel = t.active_chip ? (CHIP_LABEL[t.active_chip] || t.active_chip) : 'No chip';
     div.innerHTML = `
-      <span>${t.manager}${t.manager === KARTIKAY ? ' <span style="color:var(--ink-muted);font-size:0.75em;">(you)</span>' : ''}</span>
+      <span>${t.manager}</span>
       <span class="chip ${chipKey}">${chipLabel}</span>
       <span class="${t.transfer_cost ? 'hit' : 'hit zero'}">${t.transfers} moves${t.transfer_cost ? ' · -' + t.transfer_cost + ' pts' : ''}</span>
       <span class="pts">${t.gw_points ?? '—'}</span>
@@ -724,3 +732,5 @@
   });
 })();
 </script>
+</body>
+</html>

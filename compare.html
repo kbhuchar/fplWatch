@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Manager Head-to-Head</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -461,6 +466,13 @@
     .duo-row .verdict { justify-self: start; }
   }
 
+  @media (max-width: 480px) {
+    html { font-size: 17px; }
+    .wrap { padding: 20px 16px 64px; }
+    .tabbar a { font-size: 0.95rem; padding: 12px 4px; }
+    .picker select { padding: 14px 16px; font-size: 1rem; }
+  }
+
   footer {
     margin-top: 56px;
     padding-top: 16px;
@@ -471,6 +483,8 @@
   }
   footer a { color: var(--accent-ink); }
 </style>
+</head>
+<body>
 
 <div class="wrap">
 
@@ -788,3 +802,5 @@
   renderAllManagersHeatmap();
 })();
 </script>
+</body>
+</html>
