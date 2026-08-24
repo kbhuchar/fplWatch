@@ -1,0 +1,696 @@
+<title>SF Ke Baap Squad Watch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    color-scheme: light;
+    --ground:        #f4f6ef;
+    --surface:       #ffffff;
+    --surface-2:     #eef1e6;
+    --surface-3:     #f8f9f3;
+    --ink-primary:   #12160f;
+    --ink-secondary: #52584a;
+    --ink-muted:     #6b6f5f;
+    --border:        rgba(18,22,15,0.12);
+    --border-strong: rgba(18,22,15,0.24);
+    --accent:        #4a3aa7;
+    --accent-soft:   #ece9fb;
+    --accent-ink:    #4a3aa7;
+    --gold:          #c98500;
+    --gold-ink:      #8a5c00;
+    --gold-soft:     #f7e8c9;
+    --good:          #0a7d0a;
+    --good-soft:     #e3f3e0;
+    --critical:      #d03b3b;
+    --critical-soft: #fbe6e4;
+    --heat-rgb:      42,120,214;
+    --shadow:        0 1px 2px rgba(18,22,15,0.06), 0 8px 24px -12px rgba(18,22,15,0.18);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ground:        #0f120c;
+      --surface:       #171b12;
+      --surface-2:     #1e2318;
+      --surface-3:     #141810;
+      --ink-primary:   #f5f6f1;
+      --ink-secondary: #c7cab8;
+      --ink-muted:     #8f9285;
+      --border:        rgba(255,255,255,0.12);
+      --border-strong: rgba(255,255,255,0.24);
+      --accent:        #9085e9;
+      --accent-soft:   rgba(144,133,233,0.16);
+      --accent-ink:    #b3aaf1;
+      --gold:          #e0a83a;
+      --gold-ink:      #e0a83a;
+      --gold-soft:     rgba(224,168,58,0.16);
+      --good:          #3fbf3f;
+      --good-soft:     rgba(63,191,63,0.14);
+      --critical:      #e66767;
+      --critical-soft: rgba(230,103,103,0.14);
+      --heat-rgb:      57,135,229;
+      --shadow:        0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground:        #0f120c;
+    --surface:       #171b12;
+    --surface-2:     #1e2318;
+    --surface-3:     #141810;
+    --ink-primary:   #f5f6f1;
+    --ink-secondary: #c7cab8;
+    --ink-muted:     #8f9285;
+    --border:        rgba(255,255,255,0.12);
+    --border-strong: rgba(255,255,255,0.24);
+    --accent:        #9085e9;
+    --accent-soft:   rgba(144,133,233,0.16);
+    --accent-ink:    #b3aaf1;
+    --gold:          #e0a83a;
+    --gold-ink:      #e0a83a;
+    --gold-soft:     rgba(224,168,58,0.16);
+    --good:          #3fbf3f;
+    --good-soft:     rgba(63,191,63,0.14);
+    --critical:      #e66767;
+    --critical-soft: rgba(230,103,103,0.14);
+    --heat-rgb:      57,135,229;
+    --shadow:        0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink-primary);
+    font-family: Archivo, system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 28px 20px 80px;
+  }
+
+  /* ---------- Masthead ---------- */
+  .masthead {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--ink-primary);
+    margin-bottom: 28px;
+  }
+  .masthead h1 {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: clamp(2.1rem, 6vw, 3.2rem);
+    line-height: 0.92;
+    letter-spacing: 0.005em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .masthead .kicker {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    margin: 0 0 4px;
+  }
+  .masthead .meta {
+    text-align: right;
+    font-size: 0.82rem;
+    color: var(--ink-secondary);
+    line-height: 1.5;
+  }
+  .gw-badge {
+    display: inline-block;
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    background: var(--ink-primary);
+    color: var(--ground);
+    padding: 5px 12px;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+  }
+
+  /* ---------- Sections ---------- */
+  section { margin-bottom: 44px; }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--border-strong);
+    padding-bottom: 8px;
+  }
+  .section-head h2 {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-size: 1.05rem;
+    margin: 0;
+    color: var(--ink-primary);
+  }
+  .section-head .sub {
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+  }
+  .callout {
+    font-size: 0.86rem;
+    color: var(--ink-secondary);
+    background: var(--surface-2);
+    border-left: 3px solid var(--accent);
+    padding: 10px 14px;
+    border-radius: 0 4px 4px 0;
+    margin: 12px 0 0;
+  }
+  .callout b { color: var(--ink-primary); }
+
+  /* ---------- Standings ---------- */
+  .standings {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .standings-row {
+    display: grid;
+    grid-template-columns: 34px 1fr auto auto;
+    gap: 12px;
+    align-items: center;
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  .standings-row:last-child { border-bottom: none; }
+  .standings-row .rank {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 700;
+    color: var(--ink-muted);
+    font-size: 1.05rem;
+  }
+  .standings-row.you { background: var(--accent-soft); }
+  .standings-row .who .name { font-weight: 600; }
+  .standings-row .who .team {
+    color: var(--ink-muted);
+    font-size: 0.78rem;
+  }
+  .standings-row .pts {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    text-align: right;
+    min-width: 46px;
+  }
+  .standings-row .pts .lbl {
+    display: block;
+    font-weight: 500;
+    font-size: 0.65rem;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .standings-row .rk {
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-muted);
+    font-size: 0.78rem;
+    text-align: right;
+    min-width: 70px;
+  }
+
+  /* ---------- Heatmap ---------- */
+  .heat-scroll { overflow-x: auto; }
+  .heatmap {
+    border-collapse: collapse;
+    font-size: 0.78rem;
+    min-width: 480px;
+  }
+  .heatmap th, .heatmap td {
+    padding: 0;
+    text-align: center;
+  }
+  .heatmap th {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--ink-secondary);
+    padding: 6px 8px;
+    font-size: 0.82rem;
+  }
+  .heatmap th.rowlabel { text-align: right; }
+  .heatmap td.cell {
+    width: 64px;
+    height: 44px;
+    border: 2px solid var(--ground);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--ink-primary);
+    cursor: default;
+  }
+  .heatmap td.self {
+    background: var(--surface-2);
+    color: var(--ink-muted);
+    font-weight: 400;
+  }
+  .heat-legend {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    font-size: 0.72rem;
+    color: var(--ink-muted);
+  }
+  .heat-legend .bar {
+    width: 140px;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, rgba(var(--heat-rgb),0.06), rgba(var(--heat-rgb),0.95));
+    border: 1px solid var(--border);
+  }
+
+  /* ---------- Most owned ---------- */
+  .owned-list { display: flex; flex-direction: column; gap: 7px; }
+  .owned-row {
+    display: grid;
+    grid-template-columns: 130px 1fr 34px;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.84rem;
+  }
+  .owned-row .pname { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .owned-row .ptag {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.65rem;
+    color: var(--ink-muted);
+    margin-left: 6px;
+  }
+  .owned-track {
+    height: 14px;
+    background: var(--surface-2);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .owned-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+  }
+  .owned-row .cnt {
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    color: var(--ink-secondary);
+    font-size: 0.78rem;
+  }
+
+  /* ---------- Captains ---------- */
+  .captain-groups { display: flex; flex-direction: column; gap: 10px; }
+  .captain-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+  }
+  .captain-group .badge {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 700;
+    background: var(--gold-soft);
+    color: var(--ink-primary);
+    border: 1px solid var(--gold);
+    border-radius: 3px;
+    padding: 3px 9px;
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  .captain-group .who {
+    font-size: 0.82rem;
+    color: var(--ink-secondary);
+  }
+  .captain-group .who b { color: var(--ink-primary); font-weight: 600; }
+  .captain-group .count {
+    margin-left: auto;
+    font-size: 0.72rem;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  /* ---------- Transfers/chips ---------- */
+  .transfers {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .t-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.84rem;
+  }
+  .t-row:last-child { border-bottom: none; }
+  .t-row .chip {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-weight: 600;
+  }
+  .chip.bboost { background: var(--gold-soft); color: var(--gold-ink); border: 1px solid var(--gold); }
+  .chip.wildcard { background: var(--accent-soft); color: var(--accent-ink); border: 1px solid var(--accent); }
+  .chip.freehit { background: var(--accent-soft); color: var(--accent-ink); border: 1px solid var(--accent); }
+  .chip.triplecap { background: var(--gold-soft); color: var(--gold-ink); border: 1px solid var(--gold); }
+  .chip.none { color: var(--ink-muted); font-weight: 400; }
+  .t-row .hit { color: var(--critical); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .t-row .hit.zero { color: var(--ink-muted); font-weight: 400; }
+  .t-row .pts { font-variant-numeric: tabular-nums; font-weight: 700; min-width: 34px; text-align: right; }
+
+  /* ---------- YouTuber empty states ---------- */
+  .yt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 12px;
+  }
+  .yt-card {
+    border: 1px dashed var(--border-strong);
+    border-radius: 6px;
+    padding: 16px;
+    background: var(--surface-3);
+  }
+  .yt-card .name {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin: 0 0 4px;
+  }
+  .yt-card .status {
+    display: inline-block;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-muted);
+    border: 1px solid var(--border-strong);
+    border-radius: 3px;
+    padding: 2px 7px;
+    margin-bottom: 10px;
+  }
+  .yt-card p {
+    font-size: 0.78rem;
+    color: var(--ink-secondary);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .yt-howto {
+    margin-top: 16px;
+    font-size: 0.8rem;
+    color: var(--ink-secondary);
+    background: var(--surface-2);
+    border-radius: 6px;
+    padding: 14px 16px;
+    line-height: 1.7;
+  }
+  .yt-howto code {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.78em;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 5px;
+  }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 0.74rem;
+    color: var(--ink-muted);
+    line-height: 1.6;
+  }
+  footer a { color: var(--accent-ink); }
+
+  @media (max-width: 480px) {
+    .standings-row { grid-template-columns: 26px 1fr auto; }
+    .standings-row .rk { display: none; }
+    .owned-row { grid-template-columns: 96px 1fr 30px; }
+  }
+</style>
+
+<div class="wrap">
+
+  <div class="masthead">
+    <div>
+      <p class="kicker" id="kicker">Classic League · SF Ke Baap</p>
+      <h1 id="league-title">Squad Watch</h1>
+    </div>
+    <div class="meta">
+      <span class="gw-badge" id="gw-badge">GAMEWEEK 1</span><br>
+      <span id="gen-date"></span>
+    </div>
+  </div>
+
+  <section>
+    <div class="section-head">
+      <h2>Standings</h2>
+      <span class="sub">Total points, season to date</span>
+    </div>
+    <div class="standings" id="standings"></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Squad DNA</h2>
+      <span class="sub">Shared players between every pair, latest gameweek</span>
+    </div>
+    <div class="heat-scroll">
+      <table class="heatmap" id="heatmap"></table>
+    </div>
+    <div class="heat-legend">
+      <span>0%</span><div class="bar"></div><span>100% overlap</span>
+    </div>
+    <div class="callout" id="overlap-callout"></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>The League Template</h2>
+      <span class="sub">Most-owned players across all 6 squads</span>
+    </div>
+    <div class="owned-list" id="owned-list"></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Captaincy Calls</h2>
+      <span class="sub">Who got the armband, gameweek 1</span>
+    </div>
+    <div class="captain-groups" id="captain-groups"></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Transfers &amp; Chips</h2>
+      <span class="sub">Gameweek 1 activity</span>
+    </div>
+    <div class="transfers" id="transfers"></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>YouTuber Watch</h2>
+      <span class="sub">Not linked yet</span>
+    </div>
+    <div class="yt-grid" id="yt-grid"></div>
+    <div class="yt-howto">
+      Once a creator's team ID is linked, this section compares their squad against
+      every league member: average squad overlap, captain-match rate, and chip/transfer
+      timing, gameweek by gameweek.<br><br>
+      <b>To link one:</b> open one of their team-reveal videos (or their team page if public),
+      find the number in the URL after <code>/entry/</code>, then add it to the
+      <code>YOUTUBERS</code> dict in <code>fetch_fpl.py</code> and rerun
+      <code>python fetch_fpl.py &amp;&amp; python build_dashboard.py</code>.
+    </div>
+  </section>
+
+  <footer>
+    Data from the official Fantasy Premier League API. Season just underway —
+    only <span id="gw-count"></span> gameweek played so far, so read these as early signal, not settled patterns.
+    Rerun the fetch script after future gameweeks to refresh.<br><br>
+    Want to compare two managers head-to-head? <a href="compare.html">Open Head-to-Head</a>.
+  </footer>
+
+</div>
+
+<script type="application/json" id="fpl-data">
+{"league_name":"SF Ke Baap","current_gw":1,"standings":[{"rank":1,"manager":"Tshering Penjo","team_name":"FC Kinder Mbuemo","entry_id":2898297,"total_points":72,"gw_points":72,"overall_rank":325934},{"rank":2,"manager":"Gio Ong","team_name":"Not Too Xabi","entry_id":763518,"total_points":62,"gw_points":62,"overall_rank":1176758},{"rank":3,"manager":"Gyasu Bajracharya","team_name":"Confusedbabies","entry_id":715626,"total_points":54,"gw_points":54,"overall_rank":2692384},{"rank":4,"manager":"Hingten ㅤ","team_name":"hing10 + haaland","entry_id":4858942,"total_points":47,"gw_points":47,"overall_rank":4591185},{"rank":5,"manager":"Kartikay Bhuchar","team_name":"TheMuruganRises","entry_id":2185302,"total_points":46,"gw_points":46,"overall_rank":4872282},{"rank":6,"manager":"Sauharda Rajbhandari","team_name":"YNGA","entry_id":7562150,"total_points":40,"gw_points":40,"overall_rank":6430965}],"overlap_matrix":{"managers":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ","Kartikay Bhuchar","Sauharda Rajbhandari"],"matrix":[[1.0,0.429,0.429,0.5,0.111,0.304],[0.429,1.0,0.364,0.429,0.111,0.304],[0.429,0.364,1.0,0.5,0.111,0.25],[0.5,0.429,0.5,1.0,0.111,0.304],[0.111,0.111,0.111,0.111,1.0,0.2],[0.304,0.304,0.25,0.304,0.2,1.0]],"shared":[[15,9,9,10,3,7],[9,15,8,9,3,7],[9,8,15,10,3,6],[10,9,10,15,3,7],[3,3,3,3,15,5],[7,7,6,7,5,15]]},"most_owned":[{"name":"Haaland","team":"MCI","position":"FWD","count":6,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ","Kartikay Bhuchar","Sauharda Rajbhandari"]},{"name":"Kinsky","team":"TOT","position":"GKP","count":6,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ","Kartikay Bhuchar","Sauharda Rajbhandari"]},{"name":"B.Fernandes","team":"MUN","position":"MID","count":5,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ","Sauharda Rajbhandari"]},{"name":"Calafiori","team":"ARS","position":"DEF","count":5,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ","Sauharda Rajbhandari"]},{"name":"Calvert-Lewin","team":"LEE","position":"FWD","count":5,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ","Sauharda Rajbhandari"]},{"name":"Szoboszlai","team":"LIV","position":"MID","count":5,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ","Sauharda Rajbhandari"]},{"name":"Diop","team":"IPS","position":"DEF","count":4,"owners":["Tshering Penjo","Hingten ㅤ","Kartikay Bhuchar","Sauharda Rajbhandari"]},{"name":"João Pedro","team":"CHE","position":"FWD","count":4,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ"]},{"name":"Mbeumo","team":"MUN","position":"MID","count":4,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ"]},{"name":"Ajer","team":"BRE","position":"DEF","count":2,"owners":["Tshering Penjo","Gyasu Bajracharya"]},{"name":"Brobbey","team":"SUN","position":"FWD","count":2,"owners":["Kartikay Bhuchar","Sauharda Rajbhandari"]},{"name":"Gomez","team":"BHA","position":"MID","count":2,"owners":["Gio Ong","Kartikay Bhuchar"]}],"captains":[{"manager":"Tshering Penjo","team_name":"FC Kinder Mbuemo","captain":"Mbeumo","captain_team":"MUN"},{"manager":"Gio Ong","team_name":"Not Too Xabi","captain":"Haaland","captain_team":"MCI"},{"manager":"Gyasu Bajracharya","team_name":"Confusedbabies","captain":"B.Fernandes","captain_team":"MUN"},{"manager":"Hingten ㅤ","team_name":"hing10 + haaland","captain":"Haaland","captain_team":"MCI"},{"manager":"Kartikay Bhuchar","team_name":"TheMuruganRises","captain":"Haaland","captain_team":"MCI"},{"manager":"Sauharda Rajbhandari","team_name":"YNGA","captain":"Haaland","captain_team":"MCI"}],"transfers":[{"manager":"Tshering Penjo","transfers":0,"transfer_cost":0,"gw_points":72,"active_chip":"bboost","chips_used":[{"name":"bboost","event":1}]},{"manager":"Gio Ong","transfers":0,"transfer_cost":0,"gw_points":62,"active_chip":"bboost","chips_used":[{"name":"bboost","event":1}]},{"manager":"Gyasu Bajracharya","transfers":0,"transfer_cost":0,"gw_points":54,"active_chip":null,"chips_used":[]},{"manager":"Hingten ㅤ","transfers":0,"transfer_cost":0,"gw_points":47,"active_chip":null,"chips_used":[]},{"manager":"Kartikay Bhuchar","transfers":0,"transfer_cost":0,"gw_points":46,"active_chip":null,"chips_used":[]},{"manager":"Sauharda Rajbhandari","transfers":0,"transfer_cost":0,"gw_points":40,"active_chip":null,"chips_used":[]}],"youtubers":[{"label":"FPL Harry","linked":false},{"label":"Let's Talk FPL","linked":false},{"label":"FPL Focal","linked":false},{"label":"FPL Raptor","linked":false}]}
+</script>
+
+<script>
+(function () {
+  const DATA = JSON.parse(document.getElementById('fpl-data').textContent);
+
+  document.getElementById('kicker').textContent = 'Classic League · ' + DATA.league_name;
+  document.getElementById('gw-badge').textContent = 'GAMEWEEK ' + DATA.current_gw;
+  document.getElementById('gw-count').textContent = DATA.current_gw;
+  document.getElementById('gen-date').textContent =
+    'Generated ' + new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+  const KARTIKAY = 'Kartikay Bhuchar';
+  const firstName = n => n.split(' ')[0];
+
+  // ---- Standings ----
+  const standingsEl = document.getElementById('standings');
+  DATA.standings.forEach(row => {
+    const div = document.createElement('div');
+    div.className = 'standings-row' + (row.manager === KARTIKAY ? ' you' : '');
+    div.innerHTML = `
+      <span class="rank">${row.rank}</span>
+      <span class="who"><span class="name">${row.manager}${row.manager === KARTIKAY ? ' (you)' : ''}</span><br>
+        <span class="team">${row.team_name}</span></span>
+      <span class="pts"><span class="lbl">Pts</span>${row.total_points}</span>
+      <span class="rk">Overall ~${row.overall_rank.toLocaleString('en-GB')}</span>
+    `;
+    standingsEl.appendChild(div);
+  });
+
+  // ---- Heatmap ----
+  const names = DATA.overlap_matrix.managers;
+  const matrix = DATA.overlap_matrix.matrix;
+  const shared = DATA.overlap_matrix.shared;
+  const table = document.getElementById('heatmap');
+
+  const thead = document.createElement('tr');
+  thead.appendChild(document.createElement('th'));
+  names.forEach(n => {
+    const th = document.createElement('th');
+    th.textContent = firstName(n);
+    thead.appendChild(th);
+  });
+  table.appendChild(thead);
+
+  let maxOff = 0, maxPair = null, minAvg = Infinity, minAvgName = null;
+  names.forEach((rowName, i) => {
+    let sum = 0, cnt = 0;
+    names.forEach((colName, j) => {
+      if (i === j) return;
+      sum += matrix[i][j]; cnt++;
+      if (matrix[i][j] > maxOff) { maxOff = matrix[i][j]; maxPair = [rowName, colName]; }
+    });
+    const avg = sum / cnt;
+    if (avg < minAvg) { minAvg = avg; minAvgName = rowName; }
+  });
+
+  names.forEach((rowName, i) => {
+    const tr = document.createElement('tr');
+    const th = document.createElement('th');
+    th.className = 'rowlabel';
+    th.textContent = firstName(rowName);
+    tr.appendChild(th);
+    names.forEach((colName, j) => {
+      const td = document.createElement('td');
+      td.className = 'cell';
+      if (i === j) {
+        td.classList.add('self');
+        td.textContent = '—';
+      } else {
+        const v = matrix[i][j];
+        const alpha = 0.10 + v * 0.65;
+        td.style.background = `rgba(var(--heat-rgb), ${alpha})`;
+        td.textContent = Math.round(v * 100) + '%';
+        td.title = `${rowName} ∩ ${colName}: ${shared[i][j]} shared players (${Math.round(v * 100)}%)`;
+      }
+      tr.appendChild(td);
+    });
+    table.appendChild(tr);
+  });
+
+  document.getElementById('overlap-callout').innerHTML =
+    `<b>${maxPair[0]}</b> and <b>${maxPair[1]}</b> run the closest squads in the league, sharing
+     ${shared[names.indexOf(maxPair[0])][names.indexOf(maxPair[1])]} of 15 players (${Math.round(maxOff * 100)}%).
+     <b>${minAvgName}</b> is the biggest differential, averaging just ${Math.round(minAvg * 100)}% overlap with everyone else.`;
+
+  // ---- Most owned ----
+  const ownedEl = document.getElementById('owned-list');
+  const totalManagers = names.length;
+  DATA.most_owned.slice(0, 12).forEach(p => {
+    const row = document.createElement('div');
+    row.className = 'owned-row';
+    row.title = 'Owned by: ' + p.owners.join(', ');
+    row.innerHTML = `
+      <span class="pname">${p.name}<span class="ptag">${p.position} · ${p.team}</span></span>
+      <span class="owned-track"><span class="owned-fill" style="width:${(p.count / totalManagers) * 100}%"></span></span>
+      <span class="cnt">${p.count}/${totalManagers}</span>
+    `;
+    ownedEl.appendChild(row);
+  });
+
+  // ---- Captains ----
+  const capGroups = {};
+  DATA.captains.forEach(c => {
+    capGroups[c.captain] = capGroups[c.captain] || { team: c.captain_team, managers: [] };
+    capGroups[c.captain].managers.push(c.manager);
+  });
+  const capEl = document.getElementById('captain-groups');
+  Object.entries(capGroups)
+    .sort((a, b) => b[1].managers.length - a[1].managers.length)
+    .forEach(([captain, info]) => {
+      const div = document.createElement('div');
+      div.className = 'captain-group';
+      div.innerHTML = `
+        <span class="badge">${captain} · ${info.team}</span>
+        <span class="who">${info.managers.map(m => m === KARTIKAY ? `<b>${m}</b>` : m).join(', ')}</span>
+        <span class="count">${info.managers.length}/${totalManagers} managers</span>
+      `;
+      capEl.appendChild(div);
+    });
+
+  // ---- Transfers & chips ----
+  const CHIP_LABEL = { bboost: 'Bench Boost', wildcard: 'Wildcard', freehit: 'Free Hit', '3xc': 'Triple Captain' };
+  const CHIP_CLASS = { bboost: 'bboost', wildcard: 'wildcard', freehit: 'freehit', '3xc': 'triplecap' };
+  const trEl = document.getElementById('transfers');
+  DATA.transfers.forEach(t => {
+    const div = document.createElement('div');
+    div.className = 't-row';
+    const chipKey = t.active_chip ? (CHIP_CLASS[t.active_chip] || 'none') : 'none';
+    const chipLabel = t.active_chip ? (CHIP_LABEL[t.active_chip] || t.active_chip) : 'No chip';
+    div.innerHTML = `
+      <span>${t.manager}${t.manager === KARTIKAY ? ' <span style="color:var(--ink-muted);font-size:0.75em;">(you)</span>' : ''}</span>
+      <span class="chip ${chipKey}">${chipLabel}</span>
+      <span class="${t.transfer_cost ? 'hit' : 'hit zero'}">${t.transfers} moves${t.transfer_cost ? ' · -' + t.transfer_cost + ' pts' : ''}</span>
+      <span class="pts">${t.gw_points ?? '—'}</span>
+    `;
+    trEl.appendChild(div);
+  });
+
+  // ---- YouTubers ----
+  const ytEl = document.getElementById('yt-grid');
+  DATA.youtubers.forEach(y => {
+    const div = document.createElement('div');
+    div.className = 'yt-card';
+    div.innerHTML = `
+      <p class="name">${y.label}</p>
+      <span class="status">Not linked</span>
+      <p>Squad overlap, captain matches and chip timing vs. your league will appear here once linked.</p>
+    `;
+    ytEl.appendChild(div);
+  });
+})();
+</script>
