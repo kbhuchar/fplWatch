@@ -176,9 +176,14 @@
   .picker {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
-    align-items: center;
+    align-items: start;
     gap: 16px;
     margin-bottom: 32px;
+  }
+  .picker-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
   .picker .vs {
     font-family: "Big Shoulders Display", sans-serif;
@@ -186,6 +191,7 @@
     font-size: 1.3rem;
     color: var(--ink-muted);
     text-align: center;
+    padding-top: 12px;
   }
   .picker select {
     width: 100%;
@@ -208,6 +214,45 @@
     outline: 2px solid var(--accent);
     outline-offset: 1px;
   }
+  .lookup-row {
+    display: flex;
+    gap: 6px;
+  }
+  .lookup-row input {
+    flex: 1;
+    min-width: 0;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.82rem;
+    color: var(--ink-primary);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+  }
+  .lookup-row input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  .lookup-row button {
+    font-family: Archivo, sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--ink-primary);
+    background: var(--surface-2);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    padding: 8px 14px;
+    cursor: pointer;
+  }
+  .lookup-row button:hover { background: var(--accent-soft); border-color: var(--accent); }
+  .lookup-row button:disabled { opacity: 0.6; cursor: default; }
+  .lookup-status {
+    font-size: 0.72rem;
+    color: var(--ink-muted);
+    min-height: 1.2em;
+  }
+  .lookup-status.ok { color: var(--good); }
+  .lookup-status.error { color: var(--critical); }
 
   .same-warning {
     text-align: center;
@@ -504,9 +549,23 @@
   </nav>
 
   <div class="picker">
-    <select id="pick-a" aria-label="Manager A"></select>
+    <div class="picker-col">
+      <select id="pick-a" aria-label="Manager A"></select>
+      <div class="lookup-row">
+        <input type="text" id="lookup-a-id" inputmode="numeric" placeholder="or any FPL team ID">
+        <button type="button" id="lookup-a-btn">Load</button>
+      </div>
+      <div class="lookup-status" id="lookup-a-status"></div>
+    </div>
     <span class="vs">VS</span>
-    <select id="pick-b" aria-label="Manager B"></select>
+    <div class="picker-col">
+      <select id="pick-b" aria-label="Manager B"></select>
+      <div class="lookup-row">
+        <input type="text" id="lookup-b-id" inputmode="numeric" placeholder="or any FPL team ID">
+        <button type="button" id="lookup-b-btn">Load</button>
+      </div>
+      <div class="lookup-status" id="lookup-b-status"></div>
+    </div>
   </div>
 
   <div id="result"></div>
@@ -577,6 +636,63 @@
   const selB = document.getElementById('pick-b');
   populate(selA, 0);
   populate(selB, Math.min(1, DATA.managers.length - 1));
+
+  function addLookedUpOption(select, mgr) {
+    let group = select.querySelector('optgroup[data-custom]');
+    if (!group) {
+      group = document.createElement('optgroup');
+      group.label = 'Looked Up';
+      group.dataset.custom = '1';
+      select.appendChild(group);
+    }
+    if (!group.querySelector(`option[value="${mgr.id}"]`)) {
+      const opt = document.createElement('option');
+      opt.value = mgr.id;
+      opt.textContent = `${mgr.label} (${mgr.team_name})`;
+      group.appendChild(opt);
+    }
+  }
+
+  function wireLookup(idInputId, buttonId, statusId, select) {
+    const input = document.getElementById(idInputId);
+    const button = document.getElementById(buttonId);
+    const status = document.getElementById(statusId);
+
+    async function doLookup() {
+      const teamId = input.value.trim();
+      if (!teamId) return;
+      button.disabled = true;
+      status.className = 'lookup-status';
+      status.textContent = 'Looking up…';
+      try {
+        const res = await fetch(`/api/team?id=${encodeURIComponent(teamId)}&gw=${DATA.current_gw}`);
+        const data = await res.json();
+        if (!res.ok) {
+          status.className = 'lookup-status error';
+          status.textContent = data.error || 'Team not found.';
+          return;
+        }
+        byId[data.id] = data;
+        addLookedUpOption(selA, data);
+        addLookedUpOption(selB, data);
+        select.value = data.id;
+        status.className = 'lookup-status ok';
+        status.textContent = `Loaded ${data.label} — ${data.team_name}`;
+        render();
+      } catch (err) {
+        status.className = 'lookup-status error';
+        status.textContent = 'Network error — try again.';
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    button.addEventListener('click', doLookup);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') doLookup(); });
+  }
+
+  wireLookup('lookup-a-id', 'lookup-a-btn', 'lookup-a-status', selA);
+  wireLookup('lookup-b-id', 'lookup-b-btn', 'lookup-b-status', selB);
 
   function render() {
     const a = byId[selA.value];
