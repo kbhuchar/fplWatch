@@ -16,13 +16,6 @@ if hasattr(sys.stdout, "reconfigure"):
 YOUTUBER_LABELS = ["FPL Harry", "Let's Talk FPL", "FPL Focal", "FPL Raptor"]
 
 
-def jaccard(a, b):
-    a, b = set(a), set(b)
-    if not a or not b:
-        return None
-    return len(a & b) / len(a | b)
-
-
 def latest_gw_data(manager, current_gw):
     picks = manager["picks_by_gw"].get(str(current_gw)) or manager["picks_by_gw"].get(current_gw)
     stats = manager["gw_stats"].get(str(current_gw)) or manager["gw_stats"].get(current_gw)
@@ -45,7 +38,8 @@ def build_within_league_overlap(league_managers, current_gw):
                 srow.append(len(squads[i]))
             else:
                 a, b = set(squads[i]), set(squads[j])
-                ov = jaccard(squads[i], squads[j])
+                size = len(squads[i]) or len(squads[j])
+                ov = (len(a & b) / size) if size else None
                 row.append(round(ov, 3) if ov is not None else None)
                 srow.append(len(a & b))
         matrix.append(row)
@@ -153,9 +147,9 @@ def build_youtuber_comparisons(league_managers, youtuber_managers, current_gw):
             for gw in common_gws:
                 lp = lm["picks_by_gw"].get(str(gw)) or lm["picks_by_gw"].get(gw)
                 yp = match["picks_by_gw"].get(str(gw)) or match["picks_by_gw"].get(gw)
-                ov = jaccard(lp["squad"], yp["squad"])
-                if ov is not None:
-                    overlaps.append(ov)
+                size = len(lp["squad"]) or len(yp["squad"])
+                if size:
+                    overlaps.append(len(set(lp["squad"]) & set(yp["squad"])) / size)
                 if lp["captain"] and yp["captain"]:
                     cap_total += 1
                     if lp["captain"] == yp["captain"]:

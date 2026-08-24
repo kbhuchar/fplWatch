@@ -115,13 +115,6 @@ def build_manager_record(entry_id, label, current_gw):
     }
 
 
-def jaccard(a, b):
-    a, b = set(a), set(b)
-    if not a or not b:
-        return None
-    return len(a & b) / len(a | b)
-
-
 def compute_comparisons(league_managers, youtuber_managers):
     comparisons = []
     for lm in league_managers:
@@ -133,9 +126,9 @@ def compute_comparisons(league_managers, youtuber_managers):
             for gw in common_gws:
                 lp = lm["picks_by_gw"][gw]
                 yp = ym["picks_by_gw"][gw]
-                ov = jaccard(lp["squad"], yp["squad"])
-                if ov is not None:
-                    overlaps.append(ov)
+                size = len(lp["squad"]) or len(yp["squad"])
+                if size:
+                    overlaps.append(len(set(lp["squad"]) & set(yp["squad"])) / size)
                 if lp["captain"] is not None and yp["captain"] is not None:
                     captain_total += 1
                     if lp["captain"] == yp["captain"]:

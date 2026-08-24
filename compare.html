@@ -618,8 +618,8 @@
       const shared = listA.filter(p => bIds.has(p.id)).sort(sortFn);
       const onlyA = listA.filter(p => !bIds.has(p.id)).sort(sortFn);
       const onlyB = listB.filter(p => !aIds.has(p.id)).sort(sortFn);
-      const unionSize = aIds.size + bIds.size - shared.length;
-      const pct = unionSize ? Math.round((shared.length / unionSize) * 100) : 0;
+      const size = listA.length || listB.length;
+      const pct = size ? Math.round((shared.length / size) * 100) : 0;
 
       const section = document.createElement('section');
       section.innerHTML = `
@@ -629,7 +629,7 @@
         </div>
         <div class="overlap-stat">
           <span class="num">${pct}%</span>
-          <span class="desc">${shared.length} of ${unionSize} distinct players appear in both.</span>
+          <span class="desc">${shared.length} of ${size} players are shared.</span>
         </div>
         <div class="overlap-track"><div class="overlap-fill" style="width:${pct}%"></div></div>
         <div class="squad-cols">
@@ -735,10 +735,10 @@
         if (i === j) {
           mrow.push(1); srow.push(squads[i].length);
         } else {
-          const a = new Set(squads[i]), b = new Set(squads[j]);
+          const b = new Set(squads[j]);
           const inter = squads[i].filter(id => b.has(id)).length;
-          const union = a.size + b.size - inter;
-          mrow.push(union ? inter / union : 0);
+          const size = squads[i].length || squads[j].length;
+          mrow.push(size ? inter / size : 0);
           srow.push(inter);
         }
       });
