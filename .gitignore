@@ -7,3 +7,4 @@ page_meta.json
 page_meta.min.json
 routine_update_body.json
 __pycache__/
+node_modules/

@@ -208,6 +208,107 @@
   }
   .callout b { color: var(--ink-primary); }
 
+  /* ---------- League Analyst ---------- */
+  .analyst-log {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 420px;
+    overflow-y: auto;
+    padding: 4px 4px 4px 0;
+    margin-bottom: 12px;
+  }
+  .analyst-empty {
+    font-size: 0.82rem;
+    color: var(--ink-muted);
+    font-style: italic;
+    padding: 8px 0;
+  }
+  .analyst-msg {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+  }
+  .analyst-msg.user {
+    align-self: flex-end;
+    background: #4a3aa7;
+    color: #ffffff;
+    border-bottom-right-radius: 2px;
+  }
+  .analyst-msg.assistant {
+    align-self: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 2px;
+  }
+  .analyst-msg.pending {
+    align-self: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--ink-muted);
+    font-style: italic;
+    border-bottom-left-radius: 2px;
+  }
+  .analyst-msg.error {
+    align-self: flex-start;
+    background: var(--critical-soft);
+    color: var(--critical);
+    border: 1px solid var(--critical);
+    border-bottom-left-radius: 2px;
+  }
+  .analyst-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .analyst-suggestion {
+    font-family: Archivo, sans-serif;
+    font-size: 0.76rem;
+    color: var(--ink-secondary);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 12px;
+    cursor: pointer;
+  }
+  .analyst-suggestion:hover { background: var(--accent-soft); border-color: var(--accent); }
+  .analyst-form {
+    display: flex;
+    gap: 8px;
+  }
+  .analyst-form input {
+    flex: 1;
+    min-width: 0;
+    font-family: Archivo, sans-serif;
+    font-size: 0.88rem;
+    color: var(--ink-primary);
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    padding: 10px 14px;
+  }
+  .analyst-form input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  .analyst-form button {
+    font-family: Archivo, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink-primary);
+    background: var(--surface-2);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    padding: 10px 18px;
+    cursor: pointer;
+  }
+  .analyst-form button:hover { background: var(--accent-soft); border-color: var(--accent); }
+  .analyst-form button:disabled { opacity: 0.5; cursor: default; }
+
   /* ---------- Standings ---------- */
   .standings {
     background: var(--surface);
@@ -493,6 +594,25 @@
 
   <section>
     <div class="section-head">
+      <h2>League Analyst</h2>
+      <span class="sub">Ask anything about your league</span>
+    </div>
+    <div class="analyst-log" id="analyst-log">
+      <div class="analyst-empty">Ask a question about your league below — the analyst reasons over the real standings, squad overlap, captaincy, and transfer data on this page.</div>
+    </div>
+    <div class="analyst-suggestions">
+      <button type="button" class="analyst-suggestion">Who's the biggest differential in the league?</button>
+      <button type="button" class="analyst-suggestion">Who's captained Haaland the most?</button>
+      <button type="button" class="analyst-suggestion">Who's taken the most points hits?</button>
+    </div>
+    <form class="analyst-form" id="analyst-form">
+      <input type="text" id="analyst-input" autocomplete="off" placeholder="Ask a question about your league…" maxlength="500">
+      <button type="submit" id="analyst-send">Ask</button>
+    </form>
+  </section>
+
+  <section>
+    <div class="section-head">
       <h2>Standings</h2>
       <span class="sub">Total points, season to date</span>
     </div>
@@ -727,6 +847,77 @@
       <p>Squad overlap, captain matches and chip timing vs. your league will appear here once linked.</p>
     `;
     ytEl.appendChild(div);
+  });
+
+  // ---- League Analyst ----
+  const analystLog = document.getElementById('analyst-log');
+  const analystForm = document.getElementById('analyst-form');
+  const analystInput = document.getElementById('analyst-input');
+  const analystSend = document.getElementById('analyst-send');
+  let analystPasscode = null;
+
+  function analystAddMessage(role, text) {
+    const empty = analystLog.querySelector('.analyst-empty');
+    if (empty) empty.remove();
+    const div = document.createElement('div');
+    div.className = 'analyst-msg ' + role;
+    div.textContent = text;
+    analystLog.appendChild(div);
+    analystLog.scrollTop = analystLog.scrollHeight;
+    return div;
+  }
+
+  async function analystAsk(question) {
+    analystAddMessage('user', question);
+    const pending = analystAddMessage('pending', 'Thinking…');
+    analystSend.disabled = true;
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (analystPasscode) headers['X-Analyst-Passcode'] = analystPasscode;
+      let res = await fetch('/api/analyst', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ question, data: DATA }),
+      });
+      if (res.status === 401) {
+        const entered = window.prompt('This league analyst is passcode-protected. Enter the passcode:');
+        if (!entered) {
+          pending.remove();
+          return;
+        }
+        analystPasscode = entered;
+        headers['X-Analyst-Passcode'] = analystPasscode;
+        res = await fetch('/api/analyst', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ question, data: DATA }),
+        });
+      }
+      const payload = await res.json();
+      pending.remove();
+      if (!res.ok) {
+        analystAddMessage('error', payload.error || 'Something went wrong.');
+        return;
+      }
+      analystAddMessage('assistant', payload.answer || '(no answer)');
+    } catch (err) {
+      pending.remove();
+      analystAddMessage('error', 'Network error — try again.');
+    } finally {
+      analystSend.disabled = false;
+    }
+  }
+
+  analystForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const q = analystInput.value.trim();
+    if (!q) return;
+    analystInput.value = '';
+    analystAsk(q);
+  });
+
+  document.querySelectorAll('.analyst-suggestion').forEach(chip => {
+    chip.addEventListener('click', () => analystAsk(chip.textContent));
   });
 })();
 </script>

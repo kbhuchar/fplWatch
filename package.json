@@ -1,0 +1,7 @@
+{
+  "name": "fpl-squad-watch",
+  "private": true,
+  "dependencies": {
+    "@anthropic-ai/sdk": "latest"
+  }
+}
