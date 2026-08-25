@@ -3,5 +3,7 @@ dashboard_data.json
 dashboard_data.min.json
 compare_data.json
 compare_data.min.json
+page_meta.json
+page_meta.min.json
 routine_update_body.json
 __pycache__/

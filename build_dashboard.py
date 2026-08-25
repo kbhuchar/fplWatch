@@ -227,12 +227,16 @@ def main():
         "managers": build_manager_profiles(league_managers, youtuber_managers, players, current_gw),
     }
 
+    page_meta = {"current_gw": current_gw}
+
     with open("dashboard_data.json", "w", encoding="utf-8") as f:
         json.dump(out, f, indent=2)
     with open("compare_data.json", "w", encoding="utf-8") as f:
         json.dump(profiles, f, indent=2)
+    with open("page_meta.json", "w", encoding="utf-8") as f:
+        json.dump(page_meta, f, indent=2)
 
-    print("Wrote dashboard_data.json and compare_data.json")
+    print("Wrote dashboard_data.json, compare_data.json, and page_meta.json")
     print(json.dumps(out)[:200] + "...")
 
 

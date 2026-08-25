@@ -176,14 +176,9 @@
   .picker {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
-    align-items: start;
+    align-items: center;
     gap: 16px;
     margin-bottom: 32px;
-  }
-  .picker-col {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
   }
   .picker .vs {
     font-family: "Big Shoulders Display", sans-serif;
@@ -191,7 +186,6 @@
     font-size: 1.3rem;
     color: var(--ink-muted);
     text-align: center;
-    padding-top: 12px;
   }
   .picker select {
     width: 100%;
@@ -214,80 +208,6 @@
     outline: 2px solid var(--accent);
     outline-offset: 1px;
   }
-  .lookup-row {
-    display: flex;
-    gap: 6px;
-  }
-  .lookup-input-wrap {
-    position: relative;
-    flex: 1;
-    min-width: 0;
-  }
-  .lookup-row input {
-    width: 100%;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 0.82rem;
-    color: var(--ink-primary);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 8px 10px;
-  }
-  .lookup-row input:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 1px;
-  }
-  .lookup-row button {
-    font-family: Archivo, sans-serif;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--ink-primary);
-    background: var(--surface-2);
-    border: 1px solid var(--border-strong);
-    border-radius: 6px;
-    padding: 8px 14px;
-    cursor: pointer;
-  }
-  .lookup-row button:hover { background: var(--accent-soft); border-color: var(--accent); }
-  .lookup-row button:disabled { opacity: 0.6; cursor: default; }
-  .lookup-status {
-    font-size: 0.72rem;
-    color: var(--ink-muted);
-    min-height: 1.2em;
-  }
-  .lookup-status.ok { color: var(--good); }
-  .lookup-status.error { color: var(--critical); }
-  .lookup-results {
-    display: none;
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0;
-    right: 0;
-    background: var(--surface);
-    border: 1px solid var(--border-strong);
-    border-radius: 6px;
-    box-shadow: var(--shadow);
-    max-height: 220px;
-    overflow-y: auto;
-    z-index: 20;
-  }
-  .lookup-results.open { display: block; }
-  .lookup-result-item {
-    display: block;
-    width: 100%;
-    text-align: left;
-    background: none;
-    border: none;
-    border-bottom: 1px solid var(--border);
-    padding: 8px 10px;
-    font-family: Archivo, sans-serif;
-    cursor: pointer;
-  }
-  .lookup-result-item:last-child { border-bottom: none; }
-  .lookup-result-item:hover, .lookup-result-item:focus-visible { background: var(--accent-soft); }
-  .lookup-result-item .rn { display: block; font-size: 0.82rem; font-weight: 600; color: var(--ink-primary); }
-  .lookup-result-item .tn { display: block; font-size: 0.72rem; color: var(--ink-muted); }
-  .lookup-empty { padding: 8px 10px; font-size: 0.75rem; color: var(--ink-muted); }
 
   .same-warning {
     text-align: center;
@@ -581,32 +501,13 @@
   <nav class="tabbar">
     <a href="index.html">Squad Watch</a>
     <a href="compare.html" class="active">Head-to-Head</a>
+    <a href="search.html">Team Search</a>
   </nav>
 
   <div class="picker">
-    <div class="picker-col">
-      <select id="pick-a" aria-label="Manager A"></select>
-      <div class="lookup-row">
-        <div class="lookup-input-wrap">
-          <input type="text" id="lookup-a-id" autocomplete="off" placeholder="Search a name or paste a team ID">
-          <div class="lookup-results" id="lookup-a-results"></div>
-        </div>
-        <button type="button" id="lookup-a-btn">Load</button>
-      </div>
-      <div class="lookup-status" id="lookup-a-status"></div>
-    </div>
+    <select id="pick-a" aria-label="Manager A"></select>
     <span class="vs">VS</span>
-    <div class="picker-col">
-      <select id="pick-b" aria-label="Manager B"></select>
-      <div class="lookup-row">
-        <div class="lookup-input-wrap">
-          <input type="text" id="lookup-b-id" autocomplete="off" placeholder="Search a name or paste a team ID">
-          <div class="lookup-results" id="lookup-b-results"></div>
-        </div>
-        <button type="button" id="lookup-b-btn">Load</button>
-      </div>
-      <div class="lookup-status" id="lookup-b-status"></div>
-    </div>
+    <select id="pick-b" aria-label="Manager B"></select>
   </div>
 
   <div id="result"></div>
@@ -677,135 +578,6 @@
   const selB = document.getElementById('pick-b');
   populate(selA, 0);
   populate(selB, Math.min(1, DATA.managers.length - 1));
-
-  function addLookedUpOption(select, mgr) {
-    let group = select.querySelector('optgroup[data-custom]');
-    if (!group) {
-      group = document.createElement('optgroup');
-      group.label = 'Looked Up';
-      group.dataset.custom = '1';
-      select.appendChild(group);
-    }
-    if (!group.querySelector(`option[value="${mgr.id}"]`)) {
-      const opt = document.createElement('option');
-      opt.value = mgr.id;
-      opt.textContent = `${mgr.label} (${mgr.team_name})`;
-      group.appendChild(opt);
-    }
-  }
-
-  function wireLookup(idInputId, buttonId, statusId, resultsId, select) {
-    const input = document.getElementById(idInputId);
-    const button = document.getElementById(buttonId);
-    const status = document.getElementById(statusId);
-    const resultsEl = document.getElementById(resultsId);
-    let debounceTimer = null;
-    let lastQuery = '';
-
-    function closeResults() {
-      resultsEl.classList.remove('open');
-      resultsEl.innerHTML = '';
-    }
-
-    async function loadById(teamId, displayName) {
-      closeResults();
-      button.disabled = true;
-      status.className = 'lookup-status';
-      status.textContent = 'Loading…';
-      try {
-        const res = await fetch(`/api/team?id=${encodeURIComponent(teamId)}&gw=${DATA.current_gw}`);
-        const data = await res.json();
-        if (!res.ok) {
-          status.className = 'lookup-status error';
-          status.textContent = data.error || 'Team not found.';
-          return;
-        }
-        byId[data.id] = data;
-        addLookedUpOption(selA, data);
-        addLookedUpOption(selB, data);
-        select.value = data.id;
-        input.value = displayName || data.label;
-        status.className = 'lookup-status ok';
-        status.textContent = `Loaded ${data.label} — ${data.team_name}`;
-        render();
-      } catch (err) {
-        status.className = 'lookup-status error';
-        status.textContent = 'Network error — try again.';
-      } finally {
-        button.disabled = false;
-      }
-    }
-
-    async function searchNames(q) {
-      try {
-        const res = await fetch(`/api/search-managers?q=${encodeURIComponent(q)}`);
-        const data = await res.json();
-        if (q !== lastQuery) return; // a newer query already superseded this one
-        const hits = data.hits || [];
-        resultsEl.innerHTML = '';
-        if (!hits.length) {
-          const empty = document.createElement('div');
-          empty.className = 'lookup-empty';
-          empty.textContent = 'No name matches — try pasting the exact team ID instead.';
-          resultsEl.appendChild(empty);
-          resultsEl.classList.add('open');
-          return;
-        }
-        hits.forEach(h => {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'lookup-result-item';
-          const rn = document.createElement('span');
-          rn.className = 'rn';
-          rn.textContent = h.name;
-          const tn = document.createElement('span');
-          tn.className = 'tn';
-          tn.textContent = h.teamName;
-          btn.appendChild(rn);
-          btn.appendChild(tn);
-          btn.addEventListener('click', () => loadById(h.id, h.name));
-          resultsEl.appendChild(btn);
-        });
-        resultsEl.classList.add('open');
-      } catch (err) {
-        closeResults();
-      }
-    }
-
-    input.addEventListener('input', () => {
-      const val = input.value.trim();
-      clearTimeout(debounceTimer);
-      if (/^\d+$/.test(val) || val.length < 3) {
-        closeResults();
-        return;
-      }
-      lastQuery = val;
-      debounceTimer = setTimeout(() => searchNames(val), 350);
-    });
-
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Enter') {
-        const val = input.value.trim();
-        if (/^\d+$/.test(val)) loadById(val);
-      } else if (e.key === 'Escape') {
-        closeResults();
-      }
-    });
-
-    document.addEventListener('click', e => {
-      if (e.target !== input && !resultsEl.contains(e.target)) closeResults();
-    });
-
-    button.addEventListener('click', () => {
-      const val = input.value.trim();
-      if (!val) return;
-      if (/^\d+$/.test(val)) loadById(val);
-      else searchNames(val);
-    });
-  }
-
-  wireLookup('lookup-a-id', 'lookup-a-btn', 'lookup-a-status', 'lookup-a-results', selA);
-  wireLookup('lookup-b-id', 'lookup-b-btn', 'lookup-b-status', 'lookup-b-results', selB);
 
   function render() {
     const a = byId[selA.value];

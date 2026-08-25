@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compare Any Team</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    color-scheme: light;
+    --ground:        #f4f6ef;
+    --surface:       #ffffff;
+    --surface-2:     #eef1e6;
+    --surface-3:     #f8f9f3;
+    --ink-primary:   #12160f;
+    --ink-secondary: #52584a;
+    --ink-muted:     #6b6f5f;
+    --border:        rgba(18,22,15,0.12);
+    --border-strong: rgba(18,22,15,0.24);
+    --accent:        #4a3aa7;
+    --accent-soft:   #ece9fb;
+    --accent-ink:    #4a3aa7;
+    --gold:          #c98500;
+    --gold-ink:      #8a5c00;
+    --gold-soft:     #f7e8c9;
+    --good:          #0a7d0a;
+    --good-soft:     #e3f3e0;
+    --critical:      #d03b3b;
+    --critical-soft: #fbe6e4;
+    --shadow:        0 1px 2px rgba(18,22,15,0.06), 0 8px 24px -12px rgba(18,22,15,0.18);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ground:        #0f120c;
+      --surface:       #171b12;
+      --surface-2:     #1e2318;
+      --surface-3:     #141810;
+      --ink-primary:   #f5f6f1;
+      --ink-secondary: #c7cab8;
+      --ink-muted:     #8f9285;
+      --border:        rgba(255,255,255,0.12);
+      --border-strong: rgba(255,255,255,0.24);
+      --accent:        #9085e9;
+      --accent-soft:   rgba(144,133,233,0.16);
+      --accent-ink:    #b3aaf1;
+      --gold:          #e0a83a;
+      --gold-ink:      #e0a83a;
+      --gold-soft:     rgba(224,168,58,0.16);
+      --good:          #3fbf3f;
+      --good-soft:     rgba(63,191,63,0.14);
+      --critical:      #e66767;
+      --critical-soft: rgba(230,103,103,0.14);
+      --shadow:        0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground:        #0f120c;
+    --surface:       #171b12;
+    --surface-2:     #1e2318;
+    --surface-3:     #141810;
+    --ink-primary:   #f5f6f1;
+    --ink-secondary: #c7cab8;
+    --ink-muted:     #8f9285;
+    --border:        rgba(255,255,255,0.12);
+    --border-strong: rgba(255,255,255,0.24);
+    --accent:        #9085e9;
+    --accent-soft:   rgba(144,133,233,0.16);
+    --accent-ink:    #b3aaf1;
+    --gold:          #e0a83a;
+    --gold-ink:      #e0a83a;
+    --gold-soft:     rgba(224,168,58,0.16);
+    --good:          #3fbf3f;
+    --good-soft:     rgba(63,191,63,0.14);
+    --critical:      #e66767;
+    --critical-soft: rgba(230,103,103,0.14);
+    --shadow:        0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink-primary);
+    font-family: Archivo, system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 28px 20px 80px;
+  }
+
+  .masthead {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--ink-primary);
+    margin-bottom: 28px;
+  }
+  .masthead h1 {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: clamp(2.1rem, 6vw, 3.2rem);
+    line-height: 0.92;
+    letter-spacing: 0.005em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .masthead .kicker {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    margin: 0 0 4px;
+  }
+  .masthead .meta {
+    text-align: right;
+    font-size: 0.82rem;
+    color: var(--ink-secondary);
+    line-height: 1.5;
+  }
+  .gw-badge {
+    display: inline-block;
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    background: var(--ink-primary);
+    color: var(--ground);
+    padding: 5px 12px;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+  }
+
+  /* ---------- Tab nav ---------- */
+  .tabbar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--border-strong);
+  }
+  .tabbar a {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: var(--ink-muted);
+    padding: 10px 4px;
+    margin-bottom: -1px;
+    border-bottom: 2px solid transparent;
+  }
+  .tabbar a:hover { color: var(--ink-primary); }
+  .tabbar a.active {
+    color: var(--ink-primary);
+    border-bottom-color: var(--accent);
+  }
+  .tabbar a + a { margin-left: 18px; }
+
+  /* ---------- Picker ---------- */
+  .picker {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: start;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .picker-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .picker .vs {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 800;
+    font-size: 1.3rem;
+    color: var(--ink-muted);
+    text-align: center;
+    padding-top: 12px;
+  }
+  .lookup-row {
+    display: flex;
+    gap: 6px;
+  }
+  .lookup-input-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+  }
+  .lookup-row input {
+    width: 100%;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.85rem;
+    color: var(--ink-primary);
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    padding: 12px 14px;
+  }
+  .lookup-row input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  .lookup-row button {
+    font-family: Archivo, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink-primary);
+    background: var(--surface-2);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    padding: 10px 16px;
+    cursor: pointer;
+  }
+  .lookup-row button:hover { background: var(--accent-soft); border-color: var(--accent); }
+  .lookup-row button:disabled { opacity: 0.6; cursor: default; }
+  .lookup-status {
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+    min-height: 1.2em;
+  }
+  .lookup-status.ok { color: var(--good); font-weight: 600; }
+  .lookup-status.error { color: var(--critical); }
+  .lookup-results {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    box-shadow: var(--shadow);
+    max-height: 240px;
+    overflow-y: auto;
+    z-index: 20;
+  }
+  .lookup-results.open { display: block; }
+  .lookup-result-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    padding: 9px 12px;
+    font-family: Archivo, sans-serif;
+    cursor: pointer;
+  }
+  .lookup-result-item:last-child { border-bottom: none; }
+  .lookup-result-item:hover, .lookup-result-item:focus-visible { background: var(--accent-soft); }
+  .lookup-result-item .rn { display: block; font-size: 0.85rem; font-weight: 600; color: var(--ink-primary); }
+  .lookup-result-item .tn { display: block; font-size: 0.74rem; color: var(--ink-muted); }
+  .lookup-empty { padding: 9px 12px; font-size: 0.78rem; color: var(--ink-muted); }
+
+  .same-warning {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--ink-muted);
+    padding: 40px 20px;
+    background: var(--surface);
+    border: 1px dashed var(--border-strong);
+    border-radius: 8px;
+  }
+
+  /* ---------- Scoreline ---------- */
+  .scoreline {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .score-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    box-shadow: var(--shadow);
+  }
+  .score-card.b { text-align: right; }
+  .score-card .name {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin: 0 0 2px;
+  }
+  .score-card .team {
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+    margin: 0 0 10px;
+  }
+  .score-card .gwpts {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    font-size: 1.6rem;
+  }
+  .score-card .gwpts .lbl {
+    display: block;
+    font-weight: 500;
+    font-size: 0.65rem;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .scoreline .mid {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--ink-muted);
+    text-align: center;
+  }
+
+  /* ---------- Sections ---------- */
+  section { margin-bottom: 40px; }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--border-strong);
+    padding-bottom: 8px;
+  }
+  .section-head h2 {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-size: 1.05rem;
+    margin: 0;
+  }
+  .section-head .sub { font-size: 0.78rem; color: var(--ink-muted); }
+
+  /* ---------- Overlap stat ---------- */
+  .overlap-stat {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .overlap-stat .num {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 800;
+    font-size: 2.6rem;
+    color: var(--accent-ink);
+    line-height: 1;
+  }
+  .overlap-stat .desc {
+    font-size: 0.85rem;
+    color: var(--ink-secondary);
+    max-width: 340px;
+  }
+  .overlap-track {
+    height: 10px;
+    background: var(--surface-2);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .overlap-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 5px;
+  }
+
+  .squad-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+  }
+  .squad-col {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    min-height: 60px;
+  }
+  .squad-col.shared { background: var(--accent-soft); border-color: var(--accent); }
+  .squad-col h3 {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+    margin: 0 0 10px;
+  }
+  .squad-col.shared h3 { color: var(--accent-ink); }
+  .player-chip {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    font-size: 0.83rem;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .player-chip:last-child { border-bottom: none; }
+  .player-chip .pos {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.65rem;
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+  .empty-col {
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+    font-style: italic;
+  }
+
+  /* ---------- Captain / transfer compare ---------- */
+  .duo-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 14px;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+  }
+  .duo-row .side { font-size: 0.9rem; }
+  .duo-row .side.b { text-align: right; }
+  .duo-row .side .primary { font-weight: 700; }
+  .duo-row .side .secondary { font-size: 0.75rem; color: var(--ink-muted); }
+  .duo-row .verdict {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+    text-align: center;
+  }
+  .verdict.match { background: var(--good-soft); color: var(--good); }
+  .verdict.differ { background: var(--surface-2); color: var(--ink-muted); }
+  .verdict.hit { background: var(--critical-soft); color: var(--critical); }
+
+  @media (max-width: 620px) {
+    .picker { grid-template-columns: 1fr; }
+    .picker .vs { display: none; }
+    .scoreline { grid-template-columns: 1fr; }
+    .scoreline .mid { display: none; }
+    .score-card.b { text-align: left; }
+    .squad-cols { grid-template-columns: 1fr; }
+    .duo-row { grid-template-columns: 1fr; text-align: left; }
+    .duo-row .side.b { text-align: left; }
+    .duo-row .verdict { justify-self: start; }
+  }
+
+  @media (max-width: 480px) {
+    html { font-size: 17px; }
+    .wrap { padding: 20px 16px 64px; }
+    .tabbar a { font-size: 0.95rem; padding: 12px 4px; }
+  }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 0.74rem;
+    color: var(--ink-muted);
+    line-height: 1.6;
+  }
+  footer a { color: var(--accent-ink); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="masthead">
+    <div>
+      <p class="kicker">Fantasy Premier League</p>
+      <h1>Compare Any Team</h1>
+    </div>
+    <div class="meta">
+      <span class="gw-badge" id="gw-badge">GAMEWEEK 1</span>
+    </div>
+  </div>
+
+  <nav class="tabbar">
+    <a href="index.html">Squad Watch</a>
+    <a href="compare.html">Head-to-Head</a>
+    <a href="search.html" class="active">Team Search</a>
+  </nav>
+
+  <div class="picker">
+    <div class="picker-col">
+      <div class="lookup-row">
+        <div class="lookup-input-wrap">
+          <input type="text" id="lookup-a-id" autocomplete="off" placeholder="Search a name or paste a team ID">
+          <div class="lookup-results" id="lookup-a-results"></div>
+        </div>
+        <button type="button" id="lookup-a-btn">Load</button>
+      </div>
+      <div class="lookup-status" id="lookup-a-status">Team A not loaded yet.</div>
+    </div>
+    <span class="vs">VS</span>
+    <div class="picker-col">
+      <div class="lookup-row">
+        <div class="lookup-input-wrap">
+          <input type="text" id="lookup-b-id" autocomplete="off" placeholder="Search a name or paste a team ID">
+          <div class="lookup-results" id="lookup-b-results"></div>
+        </div>
+        <button type="button" id="lookup-b-btn">Load</button>
+      </div>
+      <div class="lookup-status" id="lookup-b-status">Team B not loaded yet.</div>
+    </div>
+  </div>
+
+  <div id="result">
+    <div class="same-warning">Load two teams above to compare them.</div>
+  </div>
+
+  <footer>
+    Name search is a best-effort lookup against an unofficial third-party index — not every
+    manager will show up. If a name search comes up empty, paste the exact FPL team ID instead
+    (the number in <code>fantasy.premierleague.com/entry/NUMBER/...</code>).
+  </footer>
+
+</div>
+
+<script type="application/json" id="page-meta">
+{"current_gw":1}
+</script>
+
+<script>
+(function () {
+  const META = JSON.parse(document.getElementById('page-meta').textContent);
+  document.getElementById('gw-badge').textContent = 'GAMEWEEK ' + META.current_gw;
+
+  const POS_ORDER = { GKP: 0, DEF: 1, MID: 2, FWD: 3 };
+  const CHIP_LABEL = { bboost: 'Bench Boost', wildcard: 'Wildcard', freehit: 'Free Hit', '3xc': 'Triple Captain' };
+
+  let managerA = null;
+  let managerB = null;
+
+  function wireLookup(idInputId, buttonId, statusId, resultsId, onLoaded) {
+    const input = document.getElementById(idInputId);
+    const button = document.getElementById(buttonId);
+    const status = document.getElementById(statusId);
+    const resultsEl = document.getElementById(resultsId);
+    let debounceTimer = null;
+    let lastQuery = '';
+
+    function closeResults() {
+      resultsEl.classList.remove('open');
+      resultsEl.innerHTML = '';
+    }
+
+    async function loadById(teamId, displayName) {
+      closeResults();
+      button.disabled = true;
+      status.className = 'lookup-status';
+      status.textContent = 'Loading…';
+      try {
+        const res = await fetch(`/api/team?id=${encodeURIComponent(teamId)}&gw=${META.current_gw}`);
+        const data = await res.json();
+        if (!res.ok) {
+          status.className = 'lookup-status error';
+          status.textContent = data.error || 'Team not found.';
+          return;
+        }
+        input.value = displayName || data.label;
+        status.className = 'lookup-status ok';
+        status.textContent = `${data.label} — ${data.team_name}`;
+        onLoaded(data);
+        render();
+      } catch (err) {
+        status.className = 'lookup-status error';
+        status.textContent = 'Network error — try again.';
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    async function searchNames(q) {
+      try {
+        const res = await fetch(`/api/search-managers?q=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        if (q !== lastQuery) return;
+        const hits = data.hits || [];
+        resultsEl.innerHTML = '';
+        if (!hits.length) {
+          const empty = document.createElement('div');
+          empty.className = 'lookup-empty';
+          empty.textContent = 'No name matches — try pasting the exact team ID instead.';
+          resultsEl.appendChild(empty);
+          resultsEl.classList.add('open');
+          return;
+        }
+        hits.forEach(h => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'lookup-result-item';
+          const rn = document.createElement('span');
+          rn.className = 'rn';
+          rn.textContent = h.name;
+          const tn = document.createElement('span');
+          tn.className = 'tn';
+          tn.textContent = h.teamName;
+          btn.appendChild(rn);
+          btn.appendChild(tn);
+          btn.addEventListener('click', () => loadById(h.id, h.name));
+          resultsEl.appendChild(btn);
+        });
+        resultsEl.classList.add('open');
+      } catch (err) {
+        closeResults();
+      }
+    }
+
+    input.addEventListener('input', () => {
+      const val = input.value.trim();
+      clearTimeout(debounceTimer);
+      if (/^\d+$/.test(val) || val.length < 3) {
+        closeResults();
+        return;
+      }
+      lastQuery = val;
+      debounceTimer = setTimeout(() => searchNames(val), 350);
+    });
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const val = input.value.trim();
+        if (/^\d+$/.test(val)) loadById(val);
+      } else if (e.key === 'Escape') {
+        closeResults();
+      }
+    });
+
+    document.addEventListener('click', e => {
+      if (e.target !== input && !resultsEl.contains(e.target)) closeResults();
+    });
+
+    button.addEventListener('click', () => {
+      const val = input.value.trim();
+      if (!val) return;
+      if (/^\d+$/.test(val)) loadById(val);
+      else searchNames(val);
+    });
+  }
+
+  wireLookup('lookup-a-id', 'lookup-a-btn', 'lookup-a-status', 'lookup-a-results', data => { managerA = data; });
+  wireLookup('lookup-b-id', 'lookup-b-btn', 'lookup-b-status', 'lookup-b-results', data => { managerB = data; });
+
+  function render() {
+    const a = managerA, b = managerB;
+    const resultEl = document.getElementById('result');
+    resultEl.innerHTML = '';
+
+    if (!a || !b) {
+      const div = document.createElement('div');
+      div.className = 'same-warning';
+      div.textContent = 'Load two teams above to compare them.';
+      resultEl.appendChild(div);
+      return;
+    }
+    if (a.id === b.id) {
+      const div = document.createElement('div');
+      div.className = 'same-warning';
+      div.textContent = 'That\'s the same team on both sides — load a different one.';
+      resultEl.appendChild(div);
+      return;
+    }
+
+    const scoreline = document.createElement('div');
+    scoreline.className = 'scoreline';
+    scoreline.innerHTML = `
+      <div class="score-card">
+        <p class="name">${a.label}</p>
+        <p class="team">${a.team_name}</p>
+        <p class="gwpts"><span class="lbl">GW Points</span>${a.gw_points ?? '—'}</p>
+      </div>
+      <div class="mid">VS</div>
+      <div class="score-card b">
+        <p class="name">${b.label}</p>
+        <p class="team">${b.team_name}</p>
+        <p class="gwpts"><span class="lbl">GW Points</span>${b.gw_points ?? '—'}</p>
+      </div>
+    `;
+    resultEl.appendChild(scoreline);
+
+    function overlapSection(title, sub, listA, listB) {
+      const aIds = new Set(listA.map(p => p.id));
+      const bIds = new Set(listB.map(p => p.id));
+      const sortFn = (x, y) => POS_ORDER[x.position] - POS_ORDER[y.position] || x.name.localeCompare(y.name);
+      const shared = listA.filter(p => bIds.has(p.id)).sort(sortFn);
+      const onlyA = listA.filter(p => !bIds.has(p.id)).sort(sortFn);
+      const onlyB = listB.filter(p => !aIds.has(p.id)).sort(sortFn);
+      const size = listA.length || listB.length;
+      const pct = size ? Math.round((shared.length / size) * 100) : 0;
+
+      const section = document.createElement('section');
+      section.innerHTML = `
+        <div class="section-head">
+          <h2>${title}</h2>
+          <span class="sub">${sub}</span>
+        </div>
+        <div class="overlap-stat">
+          <span class="num">${pct}%</span>
+          <span class="desc">${shared.length} of ${size} players are shared.</span>
+        </div>
+        <div class="overlap-track"><div class="overlap-fill" style="width:${pct}%"></div></div>
+        <div class="squad-cols">
+          <div class="squad-col">
+            <h3>Only ${a.label.split(' ')[0]}</h3>
+            ${onlyA.length ? onlyA.map(p => `<div class="player-chip"><span>${p.name}</span><span class="pos">${p.position}</span></div>`).join('') : '<span class="empty-col">Nothing unique</span>'}
+          </div>
+          <div class="squad-col shared">
+            <h3>Both</h3>
+            ${shared.length ? shared.map(p => `<div class="player-chip"><span>${p.name}</span><span class="pos">${p.position}</span></div>`).join('') : '<span class="empty-col">No overlap</span>'}
+          </div>
+          <div class="squad-col">
+            <h3>Only ${b.label.split(' ')[0]}</h3>
+            ${onlyB.length ? onlyB.map(p => `<div class="player-chip"><span>${p.name}</span><span class="pos">${p.position}</span></div>`).join('') : '<span class="empty-col">Nothing unique</span>'}
+          </div>
+        </div>
+      `;
+      return section;
+    }
+
+    resultEl.appendChild(overlapSection(
+      'Starting XI Overlap', 'Who they actually started, latest gameweek',
+      a.starting_xi || [], b.starting_xi || []
+    ));
+    resultEl.appendChild(overlapSection(
+      'Full Squad Overlap', 'All 15 players including bench, latest gameweek',
+      a.squad, b.squad
+    ));
+
+    const capSection = document.createElement('section');
+    const capMatch = a.captain && b.captain && a.captain.id === b.captain.id;
+    capSection.innerHTML = `
+      <div class="section-head">
+        <h2>Captaincy</h2>
+        <span class="sub">Armband pick, gameweek ${META.current_gw}</span>
+      </div>
+      <div class="duo-row">
+        <div class="side">
+          <div class="primary">${a.captain ? a.captain.name : '—'}</div>
+          <div class="secondary">${a.captain ? a.captain.team + ' · ' + a.captain.position : ''}</div>
+        </div>
+        <span class="verdict ${capMatch ? 'match' : 'differ'}">${capMatch ? 'Same captain' : 'Different'}</span>
+        <div class="side b">
+          <div class="primary">${b.captain ? b.captain.name : '—'}</div>
+          <div class="secondary">${b.captain ? b.captain.team + ' · ' + b.captain.position : ''}</div>
+        </div>
+      </div>
+    `;
+    resultEl.appendChild(capSection);
+
+    const trSection = document.createElement('section');
+    const aChip = a.active_chip ? (CHIP_LABEL[a.active_chip] || a.active_chip) : 'No chip';
+    const bChip = b.active_chip ? (CHIP_LABEL[b.active_chip] || b.active_chip) : 'No chip';
+    const chipMatch = (a.active_chip || null) === (b.active_chip || null);
+    trSection.innerHTML = `
+      <div class="section-head">
+        <h2>Transfers &amp; Chips</h2>
+        <span class="sub">Gameweek ${META.current_gw} activity</span>
+      </div>
+      <div class="duo-row">
+        <div class="side">
+          <div class="primary">${a.transfers} move${a.transfers === 1 ? '' : 's'}</div>
+          <div class="secondary">${a.transfer_cost ? '-' + a.transfer_cost + ' pts hit' : 'No hit'}</div>
+        </div>
+        <span class="verdict ${a.transfer_cost || b.transfer_cost ? 'hit' : 'differ'}">${a.transfers === b.transfers ? 'Same activity' : 'Different'}</span>
+        <div class="side b">
+          <div class="primary">${b.transfers} move${b.transfers === 1 ? '' : 's'}</div>
+          <div class="secondary">${b.transfer_cost ? '-' + b.transfer_cost + ' pts hit' : 'No hit'}</div>
+        </div>
+      </div>
+      <div class="duo-row">
+        <div class="side">
+          <div class="primary">${aChip}</div>
+        </div>
+        <span class="verdict ${chipMatch && a.active_chip ? 'match' : 'differ'}">${chipMatch ? (a.active_chip ? 'Both played' : 'Neither played') : 'Different'}</span>
+        <div class="side b">
+          <div class="primary">${bChip}</div>
+        </div>
+      </div>
+    `;
+    resultEl.appendChild(trSection);
+  }
+})();
+</script>
+</body>
+</html>
