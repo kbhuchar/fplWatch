@@ -226,6 +226,72 @@
   }
   .tabbar a + a { margin-left: 18px; }
 
+  /* ---------- Add a league ---------- */
+  .league-add { margin-bottom: 20px; }
+  .league-add-row { display: flex; gap: 8px; }
+  .league-add-row input {
+    flex: 1;
+    min-width: 0;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.85rem;
+    color: var(--ink-primary);
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    padding: 10px 14px;
+  }
+  .league-add-row input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .league-add-row button {
+    font-family: Archivo, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink-primary);
+    background: var(--surface-2);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    padding: 10px 16px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .league-add-row button:hover { background: var(--accent-soft); border-color: var(--accent); }
+  .league-add-row button:disabled { opacity: 0.5; cursor: default; }
+  .league-add-status {
+    font-size: 0.76rem;
+    color: var(--ink-muted);
+    min-height: 1.1em;
+    margin-top: 6px;
+  }
+  .league-add-status.ok { color: var(--good); }
+  .league-add-status.error { color: var(--critical); }
+  .league-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .league-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: var(--ink-secondary);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 8px 5px 12px;
+  }
+  .league-chip b { color: var(--ink-primary); font-weight: 600; }
+  .league-chip button {
+    background: none;
+    border: none;
+    color: var(--ink-muted);
+    font-size: 0.95rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 4px;
+  }
+  .league-chip button:hover { color: var(--critical); }
+
   /* ---------- Picker ---------- */
   .picker {
     display: grid;
@@ -525,6 +591,7 @@
     .wrap { padding: 20px 16px 64px; }
     .tabbar a { font-size: 0.95rem; padding: 12px 4px; }
     .picker select { padding: 14px 16px; font-size: 1rem; }
+    .league-add-row { flex-direction: column; }
   }
 
   footer {
@@ -589,6 +656,15 @@
     <a href="compare.html" class="active">Head-to-Head</a>
     <a href="search.html">Team Search</a>
   </nav>
+
+  <div class="league-add">
+    <div class="league-add-row">
+      <input type="text" id="league-add-id" inputmode="numeric" placeholder="Add a league by ID (e.g. 587101) to compare its managers too">
+      <button type="button" id="league-add-btn">Add League</button>
+    </div>
+    <div class="league-add-status" id="league-add-status"></div>
+    <div class="league-chips" id="league-chips"></div>
+  </div>
 
   <div class="picker">
     <select id="pick-a" aria-label="Manager A"></select>
@@ -664,6 +740,119 @@
   const selB = document.getElementById('pick-b');
   populate(selA, 0);
   populate(selB, Math.min(1, DATA.managers.length - 1));
+
+  // ---- Added leagues (persisted client-side, so anyone can pull in extra
+  // leagues to compare against, without touching the site's own data) ----
+  const ADDED_LEAGUES_KEY = 'fpl-added-leagues';
+
+  function loadAddedLeagues() {
+    try { return JSON.parse(localStorage.getItem(ADDED_LEAGUES_KEY) || '[]'); }
+    catch (e) { return []; }
+  }
+  function saveAddedLeagues(list) {
+    try { localStorage.setItem(ADDED_LEAGUES_KEY, JSON.stringify(list)); } catch (e) {}
+  }
+
+  function addManagersToSelects(groupLabel, managers, groupKey) {
+    [selA, selB].forEach(select => {
+      let group = select.querySelector(`optgroup[data-group="${groupKey}"]`);
+      if (!group) {
+        group = document.createElement('optgroup');
+        group.dataset.group = groupKey;
+        select.appendChild(group);
+      } else {
+        group.innerHTML = '';
+      }
+      group.label = groupLabel;
+      managers.forEach(m => {
+        byId[m.id] = m;
+        const opt = document.createElement('option');
+        opt.value = m.id;
+        opt.textContent = m.label;
+        group.appendChild(opt);
+      });
+    });
+  }
+
+  function renderLeagueChips() {
+    const chipsEl = document.getElementById('league-chips');
+    chipsEl.innerHTML = '';
+    loadAddedLeagues().forEach(lg => {
+      const chip = document.createElement('span');
+      chip.className = 'league-chip';
+      const label = document.createElement('b');
+      label.textContent = lg.name;
+      chip.appendChild(label);
+      chip.appendChild(document.createTextNode(` (${lg.managers.length})`));
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.textContent = '×';
+      removeBtn.setAttribute('aria-label', 'Remove ' + lg.name);
+      removeBtn.addEventListener('click', () => {
+        saveAddedLeagues(loadAddedLeagues().filter(l => l.id !== lg.id));
+        [selA, selB].forEach(select => {
+          const group = select.querySelector(`optgroup[data-group="league-${lg.id}"]`);
+          if (group) group.remove();
+        });
+        renderLeagueChips();
+        render();
+      });
+      chip.appendChild(removeBtn);
+      chipsEl.appendChild(chip);
+    });
+  }
+
+  loadAddedLeagues().forEach(lg => {
+    addManagersToSelects(lg.name, lg.managers, `league-${lg.id}`);
+  });
+  renderLeagueChips();
+
+  const leagueAddInput = document.getElementById('league-add-id');
+  const leagueAddBtn = document.getElementById('league-add-btn');
+  const leagueAddStatus = document.getElementById('league-add-status');
+
+  async function addLeague() {
+    const val = leagueAddInput.value.trim();
+    if (!/^\d+$/.test(val)) {
+      leagueAddStatus.className = 'league-add-status error';
+      leagueAddStatus.textContent = 'Enter a numeric league ID.';
+      return;
+    }
+    const existing = loadAddedLeagues();
+    if (existing.some(l => String(l.id) === val)) {
+      leagueAddStatus.className = 'league-add-status error';
+      leagueAddStatus.textContent = 'That league is already added.';
+      return;
+    }
+    leagueAddBtn.disabled = true;
+    leagueAddStatus.className = 'league-add-status';
+    leagueAddStatus.textContent = 'Loading league…';
+    try {
+      const res = await fetch(`/api/league?id=${encodeURIComponent(val)}&gw=${DATA.current_gw}`);
+      const data = await res.json();
+      if (!res.ok) {
+        leagueAddStatus.className = 'league-add-status error';
+        leagueAddStatus.textContent = data.error || 'Could not load that league.';
+        return;
+      }
+      const entry = { id: data.league_id, name: data.league_name, managers: data.managers };
+      saveAddedLeagues([...existing, entry]);
+      addManagersToSelects(entry.name, entry.managers, `league-${entry.id}`);
+      renderLeagueChips();
+      leagueAddInput.value = '';
+      leagueAddStatus.className = 'league-add-status ok';
+      leagueAddStatus.textContent = `Added ${entry.name} (${entry.managers.length} managers)` +
+        (data.truncated ? ' -- showing the first 20.' : '.');
+    } catch (err) {
+      leagueAddStatus.className = 'league-add-status error';
+      leagueAddStatus.textContent = 'Network error — try again.';
+    } finally {
+      leagueAddBtn.disabled = false;
+    }
+  }
+
+  leagueAddBtn.addEventListener('click', addLeague);
+  leagueAddInput.addEventListener('keydown', e => { if (e.key === 'Enter') addLeague(); });
 
   function render() {
     const a = byId[selA.value];
