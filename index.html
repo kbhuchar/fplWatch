@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SF Ke Baap Squad Watch</title>
+<title>Squad Watch</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -116,9 +116,12 @@
   }
   .site-logo {
     flex: none;
-    width: clamp(34px, 6vw, 46px);
-    height: clamp(34px, 6vw, 46px);
-    color: var(--accent-ink);
+    height: clamp(30px, 5.5vw, 40px);
+    width: auto;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 4px 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
   }
   .masthead h1 {
     font-family: "Big Shoulders Display", sans-serif;
@@ -174,9 +177,12 @@
   .splash.hide { opacity: 0; pointer-events: none; }
   .splash[hidden] { display: none; }
   .splash-logo {
-    width: 64px;
-    height: 64px;
-    color: var(--accent-ink);
+    height: 90px;
+    width: auto;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 12px 24px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
     animation: splash-pop 0.6s ease;
   }
   .splash-title {
@@ -706,11 +712,7 @@
 <body>
 
 <div class="splash" id="splash">
-  <svg class="splash-logo" viewBox="0 0 24 24" aria-hidden="true">
-    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.6"/>
-    <polygon points="12,7 15,9.2 13.8,13 10.2,13 9,9.2" fill="currentColor"/>
-    <path d="M12 7 L12 3.3 M15 9.2 L18.3 7.3 M13.8 13 L15.6 16.3 M10.2 13 L8.4 16.3 M9 9.2 L5.7 7.3" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/>
-  </svg>
+  <img class="splash-logo" src="assets/pl-logo.png" alt="Premier League">
   <p class="splash-title">Squad Watch</p>
 </div>
 <script>
@@ -734,13 +736,9 @@
 
   <div class="masthead">
     <div class="brand">
-      <svg class="site-logo" viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.6"/>
-        <polygon points="12,7 15,9.2 13.8,13 10.2,13 9,9.2" fill="currentColor"/>
-        <path d="M12 7 L12 3.3 M15 9.2 L18.3 7.3 M13.8 13 L15.6 16.3 M10.2 13 L8.4 16.3 M9 9.2 L5.7 7.3" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/>
-      </svg>
+      <img class="site-logo" src="assets/pl-logo.png" alt="Premier League">
       <div>
-        <p class="kicker" id="kicker">Classic League · SF Ke Baap</p>
+        <p class="kicker">Fantasy Premier League</p>
         <h1 id="league-title">Squad Watch</h1>
       </div>
     </div>
@@ -861,7 +859,6 @@
 (function () {
   const DATA = JSON.parse(document.getElementById('fpl-data').textContent);
 
-  document.getElementById('kicker').textContent = 'Classic League · ' + DATA.league_name;
   document.getElementById('gw-badge').textContent = 'GAMEWEEK ' + DATA.current_gw;
   document.getElementById('gw-count').textContent = DATA.current_gw;
   document.getElementById('gen-date').textContent =
