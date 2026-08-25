@@ -105,15 +105,14 @@ def build_transfers(league_managers, current_gw):
 
 
 def build_standings(league_managers, current_gw):
-    ranked = sorted(
-        league_managers,
-        key=lambda m: -(latest_gw_data(m, current_gw)[1] or {}).get("overall_rank", 0)
-        if latest_gw_data(m, current_gw)[1] else 0,
-    )
-    # Rank by total points across the season (sum of gw points) instead, since
-    # overall_rank direction is ascending (lower = better) -- resort properly.
+    # Total points through this gameweek only -- lets the same function serve
+    # any point in the season, not just "everything fetched so far".
     def total_points(m):
-        return sum((s.get("points") or 0) for s in m["gw_stats"].values())
+        return sum(
+            (s.get("points") or 0)
+            for gw_key, s in m["gw_stats"].items()
+            if int(gw_key) <= current_gw
+        )
 
     ranked = sorted(league_managers, key=lambda m: -total_points(m))
     rows = []
@@ -142,7 +141,10 @@ def build_youtuber_comparisons(league_managers, youtuber_managers, current_gw):
         comps = []
         for lm in league_managers:
             common_gws = sorted(
-                set(int(g) for g in lm["picks_by_gw"]) & set(int(g) for g in match["picks_by_gw"])
+                gw for gw in (
+                    set(int(g) for g in lm["picks_by_gw"]) & set(int(g) for g in match["picks_by_gw"])
+                )
+                if gw <= current_gw
             )
             overlaps, cap_matches, cap_total = [], 0, 0
             for gw in common_gws:
@@ -170,7 +172,7 @@ def build_youtuber_comparisons(league_managers, youtuber_managers, current_gw):
     return youtubers_out
 
 
-def build_captain_leaderboard(league_managers, players, gw_live_points):
+def build_captain_leaderboard(league_managers, players, gw_live_points, upto_gw):
     def live_points_for(gw, pid):
         live = gw_live_points.get(str(gw)) or gw_live_points.get(gw) or {}
         return live.get(str(pid)) or live.get(pid) or 0
@@ -183,6 +185,8 @@ def build_captain_leaderboard(league_managers, players, gw_live_points):
         best_gw = None
         for gw_key, picks in m["picks_by_gw"].items():
             gw = int(gw_key)
+            if gw > upto_gw:
+                continue
             cap_id = picks.get("effective_captain")
             mult = picks.get("effective_multiplier") or 2
             if cap_id is None:
@@ -256,16 +260,27 @@ def main():
     current_gw = data["current_gw"]
     gw_live_points = data.get("gw_live_points", {})
 
+    available_gws = sorted({
+        int(gw) for m in league_managers for gw in m["picks_by_gw"]
+    }) or [current_gw]
+
+    by_gw = {}
+    for gw in available_gws:
+        by_gw[gw] = {
+            "standings": build_standings(league_managers, gw),
+            "overlap_matrix": build_within_league_overlap(league_managers, gw),
+            "most_owned": build_most_owned(league_managers, players, gw),
+            "captains": build_captains(league_managers, players, gw),
+            "transfers": build_transfers(league_managers, gw),
+            "youtubers": build_youtuber_comparisons(league_managers, youtuber_managers, gw),
+            "captain_leaderboard": build_captain_leaderboard(league_managers, players, gw_live_points, gw),
+        }
+
     out = {
         "league_name": data["league_name"],
         "current_gw": current_gw,
-        "standings": build_standings(league_managers, current_gw),
-        "overlap_matrix": build_within_league_overlap(league_managers, current_gw),
-        "most_owned": build_most_owned(league_managers, players, current_gw),
-        "captains": build_captains(league_managers, players, current_gw),
-        "transfers": build_transfers(league_managers, current_gw),
-        "youtubers": build_youtuber_comparisons(league_managers, youtuber_managers, current_gw),
-        "captain_leaderboard": build_captain_leaderboard(league_managers, players, gw_live_points),
+        "available_gws": available_gws,
+        "by_gw": by_gw,
     }
 
     profiles = {

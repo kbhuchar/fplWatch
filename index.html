@@ -148,17 +148,33 @@
     color: var(--ink-secondary);
     line-height: 1.5;
   }
-  .gw-badge {
+  .gw-select {
     display: inline-block;
     font-family: "Big Shoulders Display", sans-serif;
     font-weight: 700;
     letter-spacing: 0.06em;
+    text-transform: uppercase;
     background: var(--ink-primary);
     color: var(--ground);
-    padding: 5px 12px;
+    padding: 6px 30px 6px 14px;
+    border: none;
     border-radius: 3px;
     font-size: 0.85rem;
-    margin-bottom: 6px;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1L6 6L11 1' stroke='currentColor' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+  }
+  .gw-select:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .gw-select option {
+    background: var(--surface);
+    color: var(--ink-primary);
+    font-family: Archivo, sans-serif;
+    text-transform: none;
   }
 
   /* ---------- Splash ---------- */
@@ -743,8 +759,7 @@
       </div>
     </div>
     <div class="meta">
-      <span class="gw-badge" id="gw-badge">GAMEWEEK 1</span><br>
-      <span id="gen-date"></span>
+      <select class="gw-select" id="gw-select" aria-label="Gameweek"></select>
     </div>
   </div>
 
@@ -765,7 +780,7 @@
   <section>
     <div class="section-head">
       <h2>Squad DNA</h2>
-      <span class="sub">Shared players between every pair, latest gameweek</span>
+      <span class="sub" id="sub-heatmap">Shared players between every pair</span>
     </div>
     <div class="heat-scroll">
       <table class="heatmap" id="heatmap"></table>
@@ -787,7 +802,7 @@
   <section>
     <div class="section-head">
       <h2>Captaincy Calls</h2>
-      <span class="sub">Who got the armband, gameweek 1</span>
+      <span class="sub" id="sub-captains">Who got the armband</span>
     </div>
     <div class="captain-groups" id="captain-groups"></div>
   </section>
@@ -803,7 +818,7 @@
   <section>
     <div class="section-head">
       <h2>Transfers &amp; Chips</h2>
-      <span class="sub">Gameweek 1 activity</span>
+      <span class="sub" id="sub-transfers">Gameweek activity</span>
     </div>
     <div class="transfers" id="transfers"></div>
   </section>
@@ -852,175 +867,203 @@
 </div>
 
 <script type="application/json" id="fpl-data">
-{"league_name":"SF Ke Baap","current_gw":1,"standings":[{"rank":1,"manager":"Tshering Penjo","team_name":"FC Kinder Mbuemo","entry_id":2898297,"total_points":72,"gw_points":72,"overall_rank":398656},{"rank":2,"manager":"Gio Ong","team_name":"Not Too Xabi","entry_id":763518,"total_points":62,"gw_points":62,"overall_rank":1436683},{"rank":3,"manager":"Gyasu Bajracharya","team_name":"Confusedbabies","entry_id":715626,"total_points":54,"gw_points":54,"overall_rank":3208418},{"rank":4,"manager":"Hingten ㅤ","team_name":"hing10 + haaland","entry_id":4858942,"total_points":47,"gw_points":47,"overall_rank":5282775},{"rank":5,"manager":"Kartikay Bhuchar","team_name":"TheMuruganRises","entry_id":2185302,"total_points":46,"gw_points":46,"overall_rank":5572584},{"rank":6,"manager":"Sauharda Rajbhandari","team_name":"YNGA","entry_id":7562150,"total_points":40,"gw_points":40,"overall_rank":7094513}],"overlap_matrix":{"managers":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ","Kartikay Bhuchar","Sauharda Rajbhandari"],"matrix":[[1.0,0.6,0.6,0.667,0.2,0.467],[0.6,1.0,0.533,0.6,0.2,0.467],[0.6,0.533,1.0,0.667,0.2,0.4],[0.667,0.6,0.667,1.0,0.2,0.467],[0.2,0.2,0.2,0.2,1.0,0.333],[0.467,0.467,0.4,0.467,0.333,1.0]],"shared":[[15,9,9,10,3,7],[9,15,8,9,3,7],[9,8,15,10,3,6],[10,9,10,15,3,7],[3,3,3,3,15,5],[7,7,6,7,5,15]]},"most_owned":[{"name":"Haaland","team":"MCI","position":"FWD","count":6,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ","Kartikay Bhuchar","Sauharda Rajbhandari"]},{"name":"Kinsky","team":"TOT","position":"GKP","count":6,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ","Kartikay Bhuchar","Sauharda Rajbhandari"]},{"name":"B.Fernandes","team":"MUN","position":"MID","count":5,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ","Sauharda Rajbhandari"]},{"name":"Calafiori","team":"ARS","position":"DEF","count":5,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ","Sauharda Rajbhandari"]},{"name":"Calvert-Lewin","team":"LEE","position":"FWD","count":5,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ","Sauharda Rajbhandari"]},{"name":"Szoboszlai","team":"LIV","position":"MID","count":5,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ","Sauharda Rajbhandari"]},{"name":"Diop","team":"IPS","position":"DEF","count":4,"owners":["Tshering Penjo","Hingten ㅤ","Kartikay Bhuchar","Sauharda Rajbhandari"]},{"name":"João Pedro","team":"CHE","position":"FWD","count":4,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ"]},{"name":"Mbeumo","team":"MUN","position":"MID","count":4,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ"]},{"name":"Ajer","team":"BRE","position":"DEF","count":2,"owners":["Tshering Penjo","Gyasu Bajracharya"]},{"name":"Brobbey","team":"SUN","position":"FWD","count":2,"owners":["Kartikay Bhuchar","Sauharda Rajbhandari"]},{"name":"Gomez","team":"BHA","position":"MID","count":2,"owners":["Gio Ong","Kartikay Bhuchar"]},{"name":"Maguire","team":"MUN","position":"DEF","count":2,"owners":["Gio Ong","Hingten ㅤ"]},{"name":"Muharemović","team":"LEE","position":"DEF","count":2,"owners":["Tshering Penjo","Hingten ㅤ"]},{"name":"N.Williams","team":"NFO","position":"DEF","count":2,"owners":["Gio Ong","Sauharda Rajbhandari"]},{"name":"Raya","team":"ARS","position":"GKP","count":2,"owners":["Kartikay Bhuchar","Sauharda Rajbhandari"]},{"name":"Shaw","team":"MUN","position":"DEF","count":2,"owners":["Gyasu Bajracharya","Kartikay Bhuchar"]},{"name":"Tzolis","team":"ARS","position":"MID","count":2,"owners":["Gyasu Bajracharya","Hingten ㅤ"]},{"name":"Verbruggen","team":"BHA","position":"GKP","count":2,"owners":["Tshering Penjo","Gio Ong"]},{"name":"van Ewijk","team":"COV","position":"DEF","count":2,"owners":["Gyasu Bajracharya","Hingten ㅤ"]},{"name":"Aina","team":"NFO","position":"DEF","count":1,"owners":["Kartikay Bhuchar"]},{"name":"Ballard","team":"SUN","position":"DEF","count":1,"owners":["Tshering Penjo"]},{"name":"Cunha","team":"MUN","position":"MID","count":1,"owners":["Kartikay Bhuchar"]},{"name":"E.Le Fée","team":"SUN","position":"MID","count":1,"owners":["Gio Ong"]},{"name":"Foden","team":"MCI","position":"MID","count":1,"owners":["Kartikay Bhuchar"]},{"name":"Gabriel","team":"ARS","position":"DEF","count":1,"owners":["Kartikay Bhuchar"]},{"name":"Gakpo","team":"LIV","position":"MID","count":1,"owners":["Kartikay Bhuchar"]},{"name":"George Hemmings","team":"AVL","position":"MID","count":1,"owners":["Hingten ㅤ"]},{"name":"Groß","team":"BHA","position":"MID","count":1,"owners":["Sauharda Rajbhandari"]},{"name":"Hughes","team":"CRY","position":"MID","count":1,"owners":["Sauharda Rajbhandari"]},{"name":"Hume","team":"SUN","position":"DEF","count":1,"owners":["Gio Ong"]},{"name":"I.Sangaré","team":"NFO","position":"MID","count":1,"owners":["Tshering Penjo"]},{"name":"Isak","team":"LIV","position":"FWD","count":1,"owners":["Kartikay Bhuchar"]},{"name":"Ndiaye","team":"EVE","position":"MID","count":1,"owners":["Tshering Penjo"]},{"name":"O'Reilly","team":"MCI","position":"DEF","count":1,"owners":["Sauharda Rajbhandari"]},{"name":"O'Shea","team":"IPS","position":"DEF","count":1,"owners":["Gio Ong"]},{"name":"Petrović","team":"BOU","position":"GKP","count":1,"owners":["Gyasu Bajracharya"]},{"name":"Robertson","team":"TOT","position":"DEF","count":1,"owners":["Kartikay Bhuchar"]},{"name":"Roefs","team":"SUN","position":"GKP","count":1,"owners":["Hingten ㅤ"]},{"name":"Schade","team":"BRE","position":"MID","count":1,"owners":["Gyasu Bajracharya"]},{"name":"Thomas","team":"COV","position":"DEF","count":1,"owners":["Gyasu Bajracharya"]},{"name":"Virgil","team":"LIV","position":"DEF","count":1,"owners":["Sauharda Rajbhandari"]},{"name":"Wilson","team":"LEE","position":"MID","count":1,"owners":["Kartikay Bhuchar"]},{"name":"Xhaka","team":"SUN","position":"MID","count":1,"owners":["Sauharda Rajbhandari"]}],"captains":[{"manager":"Tshering Penjo","team_name":"FC Kinder Mbuemo","captain_id":427,"captain":"Mbeumo","captain_team":"MUN"},{"manager":"Gio Ong","team_name":"Not Too Xabi","captain_id":411,"captain":"Haaland","captain_team":"MCI"},{"manager":"Gyasu Bajracharya","team_name":"Confusedbabies","captain_id":426,"captain":"B.Fernandes","captain_team":"MUN"},{"manager":"Hingten ㅤ","team_name":"hing10 + haaland","captain_id":411,"captain":"Haaland","captain_team":"MCI"},{"manager":"Kartikay Bhuchar","team_name":"TheMuruganRises","captain_id":411,"captain":"Haaland","captain_team":"MCI"},{"manager":"Sauharda Rajbhandari","team_name":"YNGA","captain_id":411,"captain":"Haaland","captain_team":"MCI"}],"transfers":[{"manager":"Tshering Penjo","transfers":0,"transfer_cost":0,"gw_points":72,"active_chip":"bboost","chips_used":[{"name":"bboost","event":1}]},{"manager":"Gio Ong","transfers":0,"transfer_cost":0,"gw_points":62,"active_chip":"bboost","chips_used":[{"name":"bboost","event":1}]},{"manager":"Gyasu Bajracharya","transfers":0,"transfer_cost":0,"gw_points":54,"active_chip":null,"chips_used":[]},{"manager":"Hingten ㅤ","transfers":0,"transfer_cost":0,"gw_points":47,"active_chip":null,"chips_used":[]},{"manager":"Kartikay Bhuchar","transfers":0,"transfer_cost":0,"gw_points":46,"active_chip":null,"chips_used":[]},{"manager":"Sauharda Rajbhandari","transfers":0,"transfer_cost":0,"gw_points":40,"active_chip":null,"chips_used":[]}],"youtubers":[{"label":"FPL Harry","linked":false},{"label":"Let's Talk FPL","linked":false},{"label":"FPL Focal","linked":false},{"label":"FPL Raptor","linked":false}],"captain_leaderboard":[{"manager":"Tshering Penjo","team_name":"FC Kinder Mbuemo","total_captain_points":4,"gws":1,"avg_per_gw":4.0,"most_captained":"Mbeumo","most_captained_count":1,"best_gw":{"gw":1,"points":4},"rank":1},{"manager":"Gio Ong","team_name":"Not Too Xabi","total_captain_points":4,"gws":1,"avg_per_gw":4.0,"most_captained":"Haaland","most_captained_count":1,"best_gw":{"gw":1,"points":4},"rank":2},{"manager":"Gyasu Bajracharya","team_name":"Confusedbabies","total_captain_points":4,"gws":1,"avg_per_gw":4.0,"most_captained":"B.Fernandes","most_captained_count":1,"best_gw":{"gw":1,"points":4},"rank":3},{"manager":"Hingten ㅤ","team_name":"hing10 + haaland","total_captain_points":4,"gws":1,"avg_per_gw":4.0,"most_captained":"Haaland","most_captained_count":1,"best_gw":{"gw":1,"points":4},"rank":4},{"manager":"Kartikay Bhuchar","team_name":"TheMuruganRises","total_captain_points":4,"gws":1,"avg_per_gw":4.0,"most_captained":"Haaland","most_captained_count":1,"best_gw":{"gw":1,"points":4},"rank":5},{"manager":"Sauharda Rajbhandari","team_name":"YNGA","total_captain_points":4,"gws":1,"avg_per_gw":4.0,"most_captained":"Haaland","most_captained_count":1,"best_gw":{"gw":1,"points":4},"rank":6}]}
+{"league_name":"SF Ke Baap","current_gw":1,"available_gws":[1],"by_gw":{"1":{"standings":[{"rank":1,"manager":"Tshering Penjo","team_name":"FC Kinder Mbuemo","entry_id":2898297,"total_points":72,"gw_points":72,"overall_rank":398656},{"rank":2,"manager":"Gio Ong","team_name":"Not Too Xabi","entry_id":763518,"total_points":62,"gw_points":62,"overall_rank":1436683},{"rank":3,"manager":"Gyasu Bajracharya","team_name":"Confusedbabies","entry_id":715626,"total_points":54,"gw_points":54,"overall_rank":3208418},{"rank":4,"manager":"Hingten ㅤ","team_name":"hing10 + haaland","entry_id":4858942,"total_points":47,"gw_points":47,"overall_rank":5282775},{"rank":5,"manager":"Kartikay Bhuchar","team_name":"TheMuruganRises","entry_id":2185302,"total_points":46,"gw_points":46,"overall_rank":5572584},{"rank":6,"manager":"Sauharda Rajbhandari","team_name":"YNGA","entry_id":7562150,"total_points":40,"gw_points":40,"overall_rank":7094513}],"overlap_matrix":{"managers":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ","Kartikay Bhuchar","Sauharda Rajbhandari"],"matrix":[[1.0,0.6,0.6,0.667,0.2,0.467],[0.6,1.0,0.533,0.6,0.2,0.467],[0.6,0.533,1.0,0.667,0.2,0.4],[0.667,0.6,0.667,1.0,0.2,0.467],[0.2,0.2,0.2,0.2,1.0,0.333],[0.467,0.467,0.4,0.467,0.333,1.0]],"shared":[[15,9,9,10,3,7],[9,15,8,9,3,7],[9,8,15,10,3,6],[10,9,10,15,3,7],[3,3,3,3,15,5],[7,7,6,7,5,15]]},"most_owned":[{"name":"Haaland","team":"MCI","position":"FWD","count":6,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ","Kartikay Bhuchar","Sauharda Rajbhandari"]},{"name":"Kinsky","team":"TOT","position":"GKP","count":6,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ","Kartikay Bhuchar","Sauharda Rajbhandari"]},{"name":"B.Fernandes","team":"MUN","position":"MID","count":5,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ","Sauharda Rajbhandari"]},{"name":"Calafiori","team":"ARS","position":"DEF","count":5,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ","Sauharda Rajbhandari"]},{"name":"Calvert-Lewin","team":"LEE","position":"FWD","count":5,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ","Sauharda Rajbhandari"]},{"name":"Szoboszlai","team":"LIV","position":"MID","count":5,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ","Sauharda Rajbhandari"]},{"name":"Diop","team":"IPS","position":"DEF","count":4,"owners":["Tshering Penjo","Hingten ㅤ","Kartikay Bhuchar","Sauharda Rajbhandari"]},{"name":"João Pedro","team":"CHE","position":"FWD","count":4,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ"]},{"name":"Mbeumo","team":"MUN","position":"MID","count":4,"owners":["Tshering Penjo","Gio Ong","Gyasu Bajracharya","Hingten ㅤ"]},{"name":"Ajer","team":"BRE","position":"DEF","count":2,"owners":["Tshering Penjo","Gyasu Bajracharya"]},{"name":"Brobbey","team":"SUN","position":"FWD","count":2,"owners":["Kartikay Bhuchar","Sauharda Rajbhandari"]},{"name":"Gomez","team":"BHA","position":"MID","count":2,"owners":["Gio Ong","Kartikay Bhuchar"]},{"name":"Maguire","team":"MUN","position":"DEF","count":2,"owners":["Gio Ong","Hingten ㅤ"]},{"name":"Muharemović","team":"LEE","position":"DEF","count":2,"owners":["Tshering Penjo","Hingten ㅤ"]},{"name":"N.Williams","team":"NFO","position":"DEF","count":2,"owners":["Gio Ong","Sauharda Rajbhandari"]},{"name":"Raya","team":"ARS","position":"GKP","count":2,"owners":["Kartikay Bhuchar","Sauharda Rajbhandari"]},{"name":"Shaw","team":"MUN","position":"DEF","count":2,"owners":["Gyasu Bajracharya","Kartikay Bhuchar"]},{"name":"Tzolis","team":"ARS","position":"MID","count":2,"owners":["Gyasu Bajracharya","Hingten ㅤ"]},{"name":"Verbruggen","team":"BHA","position":"GKP","count":2,"owners":["Tshering Penjo","Gio Ong"]},{"name":"van Ewijk","team":"COV","position":"DEF","count":2,"owners":["Gyasu Bajracharya","Hingten ㅤ"]},{"name":"Aina","team":"NFO","position":"DEF","count":1,"owners":["Kartikay Bhuchar"]},{"name":"Ballard","team":"SUN","position":"DEF","count":1,"owners":["Tshering Penjo"]},{"name":"Cunha","team":"MUN","position":"MID","count":1,"owners":["Kartikay Bhuchar"]},{"name":"E.Le Fée","team":"SUN","position":"MID","count":1,"owners":["Gio Ong"]},{"name":"Foden","team":"MCI","position":"MID","count":1,"owners":["Kartikay Bhuchar"]},{"name":"Gabriel","team":"ARS","position":"DEF","count":1,"owners":["Kartikay Bhuchar"]},{"name":"Gakpo","team":"LIV","position":"MID","count":1,"owners":["Kartikay Bhuchar"]},{"name":"George Hemmings","team":"AVL","position":"MID","count":1,"owners":["Hingten ㅤ"]},{"name":"Groß","team":"BHA","position":"MID","count":1,"owners":["Sauharda Rajbhandari"]},{"name":"Hughes","team":"CRY","position":"MID","count":1,"owners":["Sauharda Rajbhandari"]},{"name":"Hume","team":"SUN","position":"DEF","count":1,"owners":["Gio Ong"]},{"name":"I.Sangaré","team":"NFO","position":"MID","count":1,"owners":["Tshering Penjo"]},{"name":"Isak","team":"LIV","position":"FWD","count":1,"owners":["Kartikay Bhuchar"]},{"name":"Ndiaye","team":"EVE","position":"MID","count":1,"owners":["Tshering Penjo"]},{"name":"O'Reilly","team":"MCI","position":"DEF","count":1,"owners":["Sauharda Rajbhandari"]},{"name":"O'Shea","team":"IPS","position":"DEF","count":1,"owners":["Gio Ong"]},{"name":"Petrović","team":"BOU","position":"GKP","count":1,"owners":["Gyasu Bajracharya"]},{"name":"Robertson","team":"TOT","position":"DEF","count":1,"owners":["Kartikay Bhuchar"]},{"name":"Roefs","team":"SUN","position":"GKP","count":1,"owners":["Hingten ㅤ"]},{"name":"Schade","team":"BRE","position":"MID","count":1,"owners":["Gyasu Bajracharya"]},{"name":"Thomas","team":"COV","position":"DEF","count":1,"owners":["Gyasu Bajracharya"]},{"name":"Virgil","team":"LIV","position":"DEF","count":1,"owners":["Sauharda Rajbhandari"]},{"name":"Wilson","team":"LEE","position":"MID","count":1,"owners":["Kartikay Bhuchar"]},{"name":"Xhaka","team":"SUN","position":"MID","count":1,"owners":["Sauharda Rajbhandari"]}],"captains":[{"manager":"Tshering Penjo","team_name":"FC Kinder Mbuemo","captain_id":427,"captain":"Mbeumo","captain_team":"MUN"},{"manager":"Gio Ong","team_name":"Not Too Xabi","captain_id":411,"captain":"Haaland","captain_team":"MCI"},{"manager":"Gyasu Bajracharya","team_name":"Confusedbabies","captain_id":426,"captain":"B.Fernandes","captain_team":"MUN"},{"manager":"Hingten ㅤ","team_name":"hing10 + haaland","captain_id":411,"captain":"Haaland","captain_team":"MCI"},{"manager":"Kartikay Bhuchar","team_name":"TheMuruganRises","captain_id":411,"captain":"Haaland","captain_team":"MCI"},{"manager":"Sauharda Rajbhandari","team_name":"YNGA","captain_id":411,"captain":"Haaland","captain_team":"MCI"}],"transfers":[{"manager":"Tshering Penjo","transfers":0,"transfer_cost":0,"gw_points":72,"active_chip":"bboost","chips_used":[{"name":"bboost","event":1}]},{"manager":"Gio Ong","transfers":0,"transfer_cost":0,"gw_points":62,"active_chip":"bboost","chips_used":[{"name":"bboost","event":1}]},{"manager":"Gyasu Bajracharya","transfers":0,"transfer_cost":0,"gw_points":54,"active_chip":null,"chips_used":[]},{"manager":"Hingten ㅤ","transfers":0,"transfer_cost":0,"gw_points":47,"active_chip":null,"chips_used":[]},{"manager":"Kartikay Bhuchar","transfers":0,"transfer_cost":0,"gw_points":46,"active_chip":null,"chips_used":[]},{"manager":"Sauharda Rajbhandari","transfers":0,"transfer_cost":0,"gw_points":40,"active_chip":null,"chips_used":[]}],"youtubers":[{"label":"FPL Harry","linked":false},{"label":"Let's Talk FPL","linked":false},{"label":"FPL Focal","linked":false},{"label":"FPL Raptor","linked":false}],"captain_leaderboard":[{"manager":"Tshering Penjo","team_name":"FC Kinder Mbuemo","total_captain_points":4,"gws":1,"avg_per_gw":4.0,"most_captained":"Mbeumo","most_captained_count":1,"best_gw":{"gw":1,"points":4},"rank":1},{"manager":"Gio Ong","team_name":"Not Too Xabi","total_captain_points":4,"gws":1,"avg_per_gw":4.0,"most_captained":"Haaland","most_captained_count":1,"best_gw":{"gw":1,"points":4},"rank":2},{"manager":"Gyasu Bajracharya","team_name":"Confusedbabies","total_captain_points":4,"gws":1,"avg_per_gw":4.0,"most_captained":"B.Fernandes","most_captained_count":1,"best_gw":{"gw":1,"points":4},"rank":3},{"manager":"Hingten ㅤ","team_name":"hing10 + haaland","total_captain_points":4,"gws":1,"avg_per_gw":4.0,"most_captained":"Haaland","most_captained_count":1,"best_gw":{"gw":1,"points":4},"rank":4},{"manager":"Kartikay Bhuchar","team_name":"TheMuruganRises","total_captain_points":4,"gws":1,"avg_per_gw":4.0,"most_captained":"Haaland","most_captained_count":1,"best_gw":{"gw":1,"points":4},"rank":5},{"manager":"Sauharda Rajbhandari","team_name":"YNGA","total_captain_points":4,"gws":1,"avg_per_gw":4.0,"most_captained":"Haaland","most_captained_count":1,"best_gw":{"gw":1,"points":4},"rank":6}]}}}
 </script>
 
 <script>
 (function () {
   const DATA = JSON.parse(document.getElementById('fpl-data').textContent);
-
-  document.getElementById('gw-badge').textContent = 'GAMEWEEK ' + DATA.current_gw;
-  document.getElementById('gw-count').textContent = DATA.current_gw;
-  document.getElementById('gen-date').textContent =
-    'Generated ' + new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-
   const firstName = n => n.split(' ')[0];
-
-  // ---- Standings ----
-  const standingsEl = document.getElementById('standings');
-  DATA.standings.forEach(row => {
-    const div = document.createElement('div');
-    div.className = 'standings-row';
-    div.innerHTML = `
-      <span class="rank">${row.rank}</span>
-      <span class="who"><span class="name">${row.manager}</span><br>
-        <span class="team">${row.team_name}</span></span>
-      <span class="pts"><span class="lbl">Pts</span>${row.total_points}</span>
-      <span class="rk">Overall ~${row.overall_rank.toLocaleString('en-GB')}</span>
-    `;
-    standingsEl.appendChild(div);
-  });
-
-  // ---- Heatmap ----
-  const names = DATA.overlap_matrix.managers;
-  const matrix = DATA.overlap_matrix.matrix;
-  const shared = DATA.overlap_matrix.shared;
-  const table = document.getElementById('heatmap');
-
-  const thead = document.createElement('tr');
-  thead.appendChild(document.createElement('th'));
-  names.forEach(n => {
-    const th = document.createElement('th');
-    th.textContent = firstName(n);
-    thead.appendChild(th);
-  });
-  table.appendChild(thead);
-
-  let maxOff = 0, maxPair = null, minAvg = Infinity, minAvgName = null;
-  names.forEach((rowName, i) => {
-    let sum = 0, cnt = 0;
-    names.forEach((colName, j) => {
-      if (i === j) return;
-      sum += matrix[i][j]; cnt++;
-      if (matrix[i][j] > maxOff) { maxOff = matrix[i][j]; maxPair = [rowName, colName]; }
-    });
-    const avg = sum / cnt;
-    if (avg < minAvg) { minAvg = avg; minAvgName = rowName; }
-  });
-
-  names.forEach((rowName, i) => {
-    const tr = document.createElement('tr');
-    const th = document.createElement('th');
-    th.className = 'rowlabel';
-    th.textContent = firstName(rowName);
-    tr.appendChild(th);
-    names.forEach((colName, j) => {
-      const td = document.createElement('td');
-      td.className = 'cell';
-      if (i === j) {
-        td.classList.add('self');
-        td.textContent = '—';
-      } else {
-        const v = matrix[i][j];
-        const alpha = 0.10 + v * 0.65;
-        td.style.background = `rgba(var(--heat-rgb), ${alpha})`;
-        td.textContent = Math.round(v * 100) + '%';
-        td.title = `${rowName} ∩ ${colName}: ${shared[i][j]} shared players (${Math.round(v * 100)}%)`;
-      }
-      tr.appendChild(td);
-    });
-    table.appendChild(tr);
-  });
-
-  document.getElementById('overlap-callout').innerHTML =
-    `<b>${maxPair[0]}</b> and <b>${maxPair[1]}</b> run the closest squads in the league, sharing
-     ${shared[names.indexOf(maxPair[0])][names.indexOf(maxPair[1])]} of 15 players (${Math.round(maxOff * 100)}%).
-     <b>${minAvgName}</b> is the biggest differential, averaging just ${Math.round(minAvg * 100)}% overlap with everyone else.`;
-
-  // ---- Most owned ----
-  const ownedEl = document.getElementById('owned-list');
-  const totalManagers = names.length;
-  DATA.most_owned.slice(0, 12).forEach(p => {
-    const row = document.createElement('div');
-    row.className = 'owned-row';
-    row.title = 'Owned by: ' + p.owners.join(', ');
-    row.innerHTML = `
-      <span class="pname">${p.name}<span class="ptag">${p.position} · ${p.team}</span></span>
-      <span class="owned-track"><span class="owned-fill" style="width:${(p.count / totalManagers) * 100}%"></span></span>
-      <span class="cnt">${p.count}/${totalManagers}</span>
-    `;
-    ownedEl.appendChild(row);
-  });
-
-  // ---- Captains ----
-  // Group by captain_id, not name -- several real players share a web_name
-  // (e.g. two different "Gomez"es), and grouping by the bare string would
-  // silently merge managers who captained different players.
-  const capGroups = {};
-  DATA.captains.forEach(c => {
-    const key = c.captain_id ?? c.captain;
-    capGroups[key] = capGroups[key] || { name: c.captain, team: c.captain_team, managers: [] };
-    capGroups[key].managers.push(c.manager);
-  });
-  const capEl = document.getElementById('captain-groups');
-  Object.values(capGroups)
-    .sort((a, b) => b.managers.length - a.managers.length)
-    .forEach(info => {
-      const div = document.createElement('div');
-      div.className = 'captain-group';
-      div.innerHTML = `
-        <span class="badge">${info.name} · ${info.team}</span>
-        <span class="who">${info.managers.join(', ')}</span>
-        <span class="count">${info.managers.length}/${totalManagers} managers</span>
-      `;
-      capEl.appendChild(div);
-    });
-
-  // ---- Captain leaderboard ----
-  const capLbEl = document.getElementById('captain-leaderboard');
-  DATA.captain_leaderboard.forEach(r => {
-    const div = document.createElement('div');
-    div.className = 'standings-row';
-    div.innerHTML = `
-      <span class="rank">${r.rank}</span>
-      <span class="who"><span class="name">${r.manager}</span><br>
-        <span class="team">${r.most_captained ? 'Mostly ' + r.most_captained + ' (' + r.most_captained_count + 'x)' : r.team_name}</span></span>
-      <span class="pts"><span class="lbl">Capt Pts</span>${r.total_captain_points}</span>
-      <span class="rk">${r.avg_per_gw != null ? r.avg_per_gw + '/gw avg' : '—'}</span>
-    `;
-    capLbEl.appendChild(div);
-  });
-
-  // ---- Transfers & chips ----
   const CHIP_LABEL = { bboost: 'Bench Boost', wildcard: 'Wildcard', freehit: 'Free Hit', '3xc': 'Triple Captain' };
   const CHIP_CLASS = { bboost: 'bboost', wildcard: 'wildcard', freehit: 'freehit', '3xc': 'triplecap' };
-  const trEl = document.getElementById('transfers');
-  DATA.transfers.forEach(t => {
-    const div = document.createElement('div');
-    div.className = 't-row';
-    const chipKey = t.active_chip ? (CHIP_CLASS[t.active_chip] || 'none') : 'none';
-    const chipLabel = t.active_chip ? (CHIP_LABEL[t.active_chip] || t.active_chip) : 'No chip';
-    div.innerHTML = `
-      <span>${t.manager}</span>
-      <span class="chip ${chipKey}">${chipLabel}</span>
-      <span class="${t.transfer_cost ? 'hit' : 'hit zero'}">${t.transfers} moves${t.transfer_cost ? ' · -' + t.transfer_cost + ' pts' : ''}</span>
-      <span class="pts">${t.gw_points ?? '—'}</span>
-    `;
-    trEl.appendChild(div);
-  });
 
-  // ---- YouTubers ----
-  const ytEl = document.getElementById('yt-grid');
-  DATA.youtubers.forEach(y => {
-    const div = document.createElement('div');
-    div.className = 'yt-card';
-    div.innerHTML = `
-      <p class="name">${y.label}</p>
-      <span class="status">Not linked</span>
-      <p>Squad overlap, captain matches and chip timing vs. your league will appear here once linked.</p>
-    `;
-    ytEl.appendChild(div);
+  document.getElementById('gw-count').textContent = DATA.current_gw;
+
+  // ---- Gameweek picker ----
+  const gwSelect = document.getElementById('gw-select');
+  DATA.available_gws.forEach(gw => {
+    const opt = document.createElement('option');
+    opt.value = gw;
+    opt.textContent = 'GAMEWEEK ' + gw;
+    gwSelect.appendChild(opt);
   });
+  gwSelect.value = DATA.current_gw;
+  gwSelect.addEventListener('change', () => renderForGw(parseInt(gwSelect.value, 10)));
+
+  let selectedGw = DATA.current_gw;
+
+  function renderForGw(gw) {
+    const gwData = DATA.by_gw[gw];
+    if (!gwData) return;
+    selectedGw = gw;
+
+    document.getElementById('sub-heatmap').textContent = `Shared players between every pair, gameweek ${gw}`;
+    document.getElementById('sub-captains').textContent = `Who got the armband, gameweek ${gw}`;
+    document.getElementById('sub-transfers').textContent = `Gameweek ${gw} activity`;
+
+    // ---- Standings ----
+    const standingsEl = document.getElementById('standings');
+    standingsEl.innerHTML = '';
+    gwData.standings.forEach(row => {
+      const div = document.createElement('div');
+      div.className = 'standings-row';
+      div.innerHTML = `
+        <span class="rank">${row.rank}</span>
+        <span class="who"><span class="name">${row.manager}</span><br>
+          <span class="team">${row.team_name}</span></span>
+        <span class="pts"><span class="lbl">Pts</span>${row.total_points}</span>
+        <span class="rk">Overall ~${row.overall_rank != null ? row.overall_rank.toLocaleString('en-GB') : '—'}</span>
+      `;
+      standingsEl.appendChild(div);
+    });
+
+    // ---- Heatmap ----
+    const names = gwData.overlap_matrix.managers;
+    const matrix = gwData.overlap_matrix.matrix;
+    const shared = gwData.overlap_matrix.shared;
+    const table = document.getElementById('heatmap');
+    table.innerHTML = '';
+
+    const thead = document.createElement('tr');
+    thead.appendChild(document.createElement('th'));
+    names.forEach(n => {
+      const th = document.createElement('th');
+      th.textContent = firstName(n);
+      thead.appendChild(th);
+    });
+    table.appendChild(thead);
+
+    let maxOff = 0, maxPair = null, minAvg = Infinity, minAvgName = null;
+    names.forEach((rowName, i) => {
+      let sum = 0, cnt = 0;
+      names.forEach((colName, j) => {
+        if (i === j) return;
+        sum += matrix[i][j]; cnt++;
+        if (matrix[i][j] > maxOff) { maxOff = matrix[i][j]; maxPair = [rowName, colName]; }
+      });
+      const avg = sum / cnt;
+      if (avg < minAvg) { minAvg = avg; minAvgName = rowName; }
+    });
+
+    names.forEach((rowName, i) => {
+      const tr = document.createElement('tr');
+      const th = document.createElement('th');
+      th.className = 'rowlabel';
+      th.textContent = firstName(rowName);
+      tr.appendChild(th);
+      names.forEach((colName, j) => {
+        const td = document.createElement('td');
+        td.className = 'cell';
+        if (i === j) {
+          td.classList.add('self');
+          td.textContent = '—';
+        } else {
+          const v = matrix[i][j];
+          const alpha = 0.10 + v * 0.65;
+          td.style.background = `rgba(var(--heat-rgb), ${alpha})`;
+          td.textContent = Math.round(v * 100) + '%';
+          td.title = `${rowName} ∩ ${colName}: ${shared[i][j]} shared players (${Math.round(v * 100)}%)`;
+        }
+        tr.appendChild(td);
+      });
+      table.appendChild(tr);
+    });
+
+    document.getElementById('overlap-callout').innerHTML =
+      `<b>${maxPair[0]}</b> and <b>${maxPair[1]}</b> run the closest squads in the league, sharing
+       ${shared[names.indexOf(maxPair[0])][names.indexOf(maxPair[1])]} of 15 players (${Math.round(maxOff * 100)}%).
+       <b>${minAvgName}</b> is the biggest differential, averaging just ${Math.round(minAvg * 100)}% overlap with everyone else.`;
+
+    // ---- Most owned ----
+    const ownedEl = document.getElementById('owned-list');
+    ownedEl.innerHTML = '';
+    const totalManagers = names.length;
+    gwData.most_owned.slice(0, 12).forEach(p => {
+      const row = document.createElement('div');
+      row.className = 'owned-row';
+      row.title = 'Owned by: ' + p.owners.join(', ');
+      row.innerHTML = `
+        <span class="pname">${p.name}<span class="ptag">${p.position} · ${p.team}</span></span>
+        <span class="owned-track"><span class="owned-fill" style="width:${(p.count / totalManagers) * 100}%"></span></span>
+        <span class="cnt">${p.count}/${totalManagers}</span>
+      `;
+      ownedEl.appendChild(row);
+    });
+
+    // ---- Captains ----
+    // Group by captain_id, not name -- several real players share a web_name
+    // (e.g. two different "Gomez"es), and grouping by the bare string would
+    // silently merge managers who captained different players.
+    const capGroups = {};
+    gwData.captains.forEach(c => {
+      const key = c.captain_id ?? c.captain;
+      capGroups[key] = capGroups[key] || { name: c.captain, team: c.captain_team, managers: [] };
+      capGroups[key].managers.push(c.manager);
+    });
+    const capEl = document.getElementById('captain-groups');
+    capEl.innerHTML = '';
+    Object.values(capGroups)
+      .sort((a, b) => b.managers.length - a.managers.length)
+      .forEach(info => {
+        const div = document.createElement('div');
+        div.className = 'captain-group';
+        div.innerHTML = `
+          <span class="badge">${info.name} · ${info.team}</span>
+          <span class="who">${info.managers.join(', ')}</span>
+          <span class="count">${info.managers.length}/${totalManagers} managers</span>
+        `;
+        capEl.appendChild(div);
+      });
+
+    // ---- Captain leaderboard ----
+    const capLbEl = document.getElementById('captain-leaderboard');
+    capLbEl.innerHTML = '';
+    gwData.captain_leaderboard.forEach(r => {
+      const div = document.createElement('div');
+      div.className = 'standings-row';
+      div.innerHTML = `
+        <span class="rank">${r.rank}</span>
+        <span class="who"><span class="name">${r.manager}</span><br>
+          <span class="team">${r.most_captained ? 'Mostly ' + r.most_captained + ' (' + r.most_captained_count + 'x)' : r.team_name}</span></span>
+        <span class="pts"><span class="lbl">Capt Pts</span>${r.total_captain_points}</span>
+        <span class="rk">${r.avg_per_gw != null ? r.avg_per_gw + '/gw avg' : '—'}</span>
+      `;
+      capLbEl.appendChild(div);
+    });
+
+    // ---- Transfers & chips ----
+    const trEl = document.getElementById('transfers');
+    trEl.innerHTML = '';
+    gwData.transfers.forEach(t => {
+      const div = document.createElement('div');
+      div.className = 't-row';
+      const chipKey = t.active_chip ? (CHIP_CLASS[t.active_chip] || 'none') : 'none';
+      const chipLabel = t.active_chip ? (CHIP_LABEL[t.active_chip] || t.active_chip) : 'No chip';
+      div.innerHTML = `
+        <span>${t.manager}</span>
+        <span class="chip ${chipKey}">${chipLabel}</span>
+        <span class="${t.transfer_cost ? 'hit' : 'hit zero'}">${t.transfers} moves${t.transfer_cost ? ' · -' + t.transfer_cost + ' pts' : ''}</span>
+        <span class="pts">${t.gw_points ?? '—'}</span>
+      `;
+      trEl.appendChild(div);
+    });
+
+    // ---- YouTubers ----
+    const ytEl = document.getElementById('yt-grid');
+    ytEl.innerHTML = '';
+    gwData.youtubers.forEach(y => {
+      const div = document.createElement('div');
+      div.className = 'yt-card';
+      div.innerHTML = `
+        <p class="name">${y.label}</p>
+        <span class="status">${y.linked ? 'Linked' : 'Not linked'}</span>
+        <p>Squad overlap, captain matches and chip timing vs. your league will appear here once linked.</p>
+      `;
+      ytEl.appendChild(div);
+    });
+  }
+
+  renderForGw(DATA.current_gw);
 
   // ---- League Analyst ----
   const analystLog = document.getElementById('analyst-log');
@@ -1057,6 +1100,10 @@
     return div;
   }
 
+  function analystPayload() {
+    return { league_name: DATA.league_name, current_gw: selectedGw, ...DATA.by_gw[selectedGw] };
+  }
+
   async function analystAsk(question) {
     analystAddMessage('user', question);
     const pending = analystAddMessage('pending', 'Thinking…');
@@ -1067,7 +1114,7 @@
       let res = await fetch('/api/analyst', {
         method: 'POST',
         headers,
-        body: JSON.stringify({ question, data: DATA }),
+        body: JSON.stringify({ question, data: analystPayload() }),
       });
       if (res.status === 401) {
         const entered = window.prompt('This league analyst is passcode-protected. Enter the passcode:');
@@ -1080,7 +1127,7 @@
         res = await fetch('/api/analyst', {
           method: 'POST',
           headers,
-          body: JSON.stringify({ question, data: DATA }),
+          body: JSON.stringify({ question, data: analystPayload() }),
         });
       }
       const payload = await res.json();
