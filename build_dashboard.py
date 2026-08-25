@@ -169,6 +169,50 @@ def build_youtuber_comparisons(league_managers, youtuber_managers, current_gw):
     return youtubers_out
 
 
+def build_captain_leaderboard(league_managers, players, gw_live_points):
+    def live_points_for(gw, pid):
+        live = gw_live_points.get(str(gw)) or gw_live_points.get(gw) or {}
+        return live.get(str(pid)) or live.get(pid) or 0
+
+    rows = []
+    for m in league_managers:
+        total = 0
+        gw_count = 0
+        cap_counts = {}
+        best_gw = None
+        for gw_key, picks in m["picks_by_gw"].items():
+            gw = int(gw_key)
+            cap_id = picks.get("effective_captain")
+            mult = picks.get("effective_multiplier") or 2
+            if cap_id is None:
+                continue
+            contribution = live_points_for(gw, cap_id) * mult
+            total += contribution
+            gw_count += 1
+            cap_counts[cap_id] = cap_counts.get(cap_id, 0) + 1
+            if best_gw is None or contribution > best_gw["points"]:
+                best_gw = {"gw": gw, "points": contribution}
+
+        most_captained_id = max(cap_counts, key=cap_counts.get) if cap_counts else None
+        p = (players.get(str(most_captained_id)) or players.get(most_captained_id)) if most_captained_id else None
+
+        rows.append({
+            "manager": m["label"],
+            "team_name": m.get("team_name", ""),
+            "total_captain_points": total,
+            "gws": gw_count,
+            "avg_per_gw": round(total / gw_count, 1) if gw_count else None,
+            "most_captained": p["name"] if p else None,
+            "most_captained_count": cap_counts.get(most_captained_id, 0) if most_captained_id else 0,
+            "best_gw": best_gw,
+        })
+
+    rows.sort(key=lambda r: -r["total_captain_points"])
+    for i, r in enumerate(rows, start=1):
+        r["rank"] = i
+    return rows
+
+
 def build_manager_profiles(league_managers, youtuber_managers, players, current_gw):
     def player_info(pid):
         p = players.get(str(pid)) or players.get(pid)
@@ -209,6 +253,7 @@ def main():
     youtuber_managers = data["youtuber_managers"]
     players = data["players"]
     current_gw = data["current_gw"]
+    gw_live_points = data.get("gw_live_points", {})
 
     out = {
         "league_name": data["league_name"],
@@ -219,6 +264,7 @@ def main():
         "captains": build_captains(league_managers, players, current_gw),
         "transfers": build_transfers(league_managers, current_gw),
         "youtubers": build_youtuber_comparisons(league_managers, youtuber_managers, current_gw),
+        "captain_leaderboard": build_captain_leaderboard(league_managers, players, gw_live_points),
     }
 
     profiles = {

@@ -75,6 +75,13 @@ def fetch_entry_picks(entry_id, gw):
     return get(f"{BASE}/entry/{entry_id}/event/{gw}/picks/")
 
 
+def fetch_gw_live_points(gw):
+    """Every player's raw (pre-multiplier) points for one gameweek, fetched once
+    and reused across every manager's captain lookup for that gameweek."""
+    data = get(f"{BASE}/event/{gw}/live/")
+    return {el["id"]: el["stats"]["total_points"] for el in data["elements"]}
+
+
 def build_manager_record(entry_id, label, current_gw):
     history = fetch_entry_history(entry_id)
     chips = [{"name": c["name"], "event": c["event"]} for c in history.get("chips", [])]
@@ -98,10 +105,15 @@ def build_manager_record(entry_id, label, current_gw):
         squad = [pk["element"] for pk in p["picks"]]
         starting_xi = [pk["element"] for pk in p["picks"] if pk["position"] <= 11]
         captain = next((pk["element"] for pk in p["picks"] if pk["is_captain"]), None)
+        # The pick actually carrying the armband boost -- usually the captain,
+        # but the vice-captain if the captain didn't play that gameweek.
+        boosted = max(p["picks"], key=lambda pk: pk["multiplier"])
         picks_by_gw[gw] = {
             "squad": squad,
             "starting_xi": starting_xi,
             "captain": captain,
+            "effective_captain": boosted["element"],
+            "effective_multiplier": boosted["multiplier"],
             "active_chip": p.get("active_chip"),
         }
         time.sleep(0.15)  # be polite to the API
@@ -173,6 +185,17 @@ def main():
 
     comparisons = compute_comparisons(league_managers, youtuber_managers)
 
+    all_gws = sorted({
+        gw
+        for m in league_managers + youtuber_managers
+        for gw in m["picks_by_gw"]
+    })
+    print(f"Fetching live points for gameweek(s) {all_gws}...")
+    gw_live_points = {}
+    for gw in all_gws:
+        gw_live_points[gw] = fetch_gw_live_points(gw)
+        time.sleep(0.15)
+
     out = {
         "league_id": LEAGUE_ID,
         "league_name": league_name,
@@ -181,6 +204,7 @@ def main():
         "league_managers": league_managers,
         "youtuber_managers": youtuber_managers,
         "comparisons": comparisons,
+        "gw_live_points": gw_live_points,
     }
 
     with open("fpl_data.json", "w", encoding="utf-8") as f:
