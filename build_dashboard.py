@@ -82,6 +82,7 @@ def build_captains(league_managers, players, current_gw):
         rows.append({
             "manager": m["label"],
             "team_name": m.get("team_name", ""),
+            "captain_id": cap_id,
             "captain": p["name"] if p else None,
             "captain_team": p["team"] if p else None,
         })
