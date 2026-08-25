@@ -208,15 +208,80 @@
   }
   .callout b { color: var(--ink-primary); }
 
-  /* ---------- League Analyst ---------- */
+  /* ---------- League Analyst (floating widget) ---------- */
+  .analyst-fab {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #ffffff;
+    background: #4a3aa7;
+    border: none;
+    border-radius: 999px;
+    padding: 14px 20px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+  }
+  .analyst-fab:hover { opacity: 0.92; }
+  .analyst-fab svg { width: 18px; height: 18px; flex: none; }
+  .analyst-fab[hidden] { display: none; }
+
+  .analyst-panel {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 60;
+    width: 380px;
+    max-width: calc(100vw - 32px);
+    height: min(560px, calc(100vh - 40px));
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .analyst-panel[hidden] { display: none; }
+  .analyst-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: none;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.85rem;
+    color: var(--ink-primary);
+  }
+  .analyst-close {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    color: var(--ink-muted);
+    cursor: pointer;
+    padding: 0 2px;
+  }
+  .analyst-close:hover { color: var(--ink-primary); }
   .analyst-log {
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    max-height: 420px;
     overflow-y: auto;
-    padding: 4px 4px 4px 0;
-    margin-bottom: 12px;
+    padding: 12px 16px;
   }
   .analyst-empty {
     font-size: 0.82rem;
@@ -260,14 +325,15 @@
     border-bottom-left-radius: 2px;
   }
   .analyst-suggestions {
+    flex: none;
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
-    margin-bottom: 12px;
+    padding: 0 16px 12px;
   }
   .analyst-suggestion {
     font-family: Archivo, sans-serif;
-    font-size: 0.76rem;
+    font-size: 0.74rem;
     color: var(--ink-secondary);
     background: var(--surface-2);
     border: 1px solid var(--border);
@@ -277,8 +343,11 @@
   }
   .analyst-suggestion:hover { background: var(--accent-soft); border-color: var(--accent); }
   .analyst-form {
+    flex: none;
     display: flex;
     gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
   }
   .analyst-form input {
     flex: 1;
@@ -568,6 +637,15 @@
     .standings-row .rk { display: none; }
     .owned-row { grid-template-columns: 96px 1fr 30px; }
     .tabbar a { font-size: 0.95rem; padding: 12px 4px; }
+    .analyst-panel {
+      right: 10px;
+      left: 10px;
+      bottom: 10px;
+      width: auto;
+      max-width: none;
+      height: min(70vh, calc(100vh - 20px));
+    }
+    .analyst-fab { right: 14px; bottom: 14px; }
   }
 </style>
 </head>
@@ -591,25 +669,6 @@
     <a href="compare.html">Head-to-Head</a>
     <a href="search.html">Team Search</a>
   </nav>
-
-  <section>
-    <div class="section-head">
-      <h2>League Analyst</h2>
-      <span class="sub">Ask anything about your league</span>
-    </div>
-    <div class="analyst-log" id="analyst-log">
-      <div class="analyst-empty">Ask a question about your league below — the analyst reasons over the real standings, squad overlap, captaincy, and transfer data on this page.</div>
-    </div>
-    <div class="analyst-suggestions">
-      <button type="button" class="analyst-suggestion">Who's the biggest differential in the league?</button>
-      <button type="button" class="analyst-suggestion">Who's captained Haaland the most?</button>
-      <button type="button" class="analyst-suggestion">Who's taken the most points hits?</button>
-    </div>
-    <form class="analyst-form" id="analyst-form">
-      <input type="text" id="analyst-input" autocomplete="off" placeholder="Ask a question about your league…" maxlength="500">
-      <button type="submit" id="analyst-send">Ask</button>
-    </form>
-  </section>
 
   <section>
     <div class="section-head">
@@ -679,6 +738,32 @@
     Rerun the fetch script after future gameweeks to refresh.
   </footer>
 
+</div>
+
+<button type="button" class="analyst-fab" id="analyst-fab" aria-label="Ask the League Analyst" aria-expanded="false" aria-controls="analyst-panel">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+  </svg>
+  <span>Ask</span>
+</button>
+
+<div class="analyst-panel" id="analyst-panel" hidden>
+  <div class="analyst-panel-head">
+    <span>League Analyst</span>
+    <button type="button" class="analyst-close" id="analyst-close" aria-label="Close">&times;</button>
+  </div>
+  <div class="analyst-log" id="analyst-log">
+    <div class="analyst-empty">Ask a question about your league — the analyst reasons over the real standings, squad overlap, captaincy, and transfer data on this page.</div>
+  </div>
+  <div class="analyst-suggestions">
+    <button type="button" class="analyst-suggestion">Who's the biggest differential in the league?</button>
+    <button type="button" class="analyst-suggestion">Who's captained Haaland the most?</button>
+    <button type="button" class="analyst-suggestion">Who's taken the most points hits?</button>
+  </div>
+  <form class="analyst-form" id="analyst-form">
+    <input type="text" id="analyst-input" autocomplete="off" placeholder="Ask a question…" maxlength="500">
+    <button type="submit" id="analyst-send">Ask</button>
+  </form>
 </div>
 
 <script type="application/json" id="fpl-data">
@@ -854,7 +939,24 @@
   const analystForm = document.getElementById('analyst-form');
   const analystInput = document.getElementById('analyst-input');
   const analystSend = document.getElementById('analyst-send');
+  const analystFab = document.getElementById('analyst-fab');
+  const analystPanel = document.getElementById('analyst-panel');
+  const analystCloseBtn = document.getElementById('analyst-close');
   let analystPasscode = null;
+
+  function analystOpen() {
+    analystPanel.hidden = false;
+    analystFab.hidden = true;
+    analystFab.setAttribute('aria-expanded', 'true');
+    analystInput.focus();
+  }
+  function analystCloseFn() {
+    analystPanel.hidden = true;
+    analystFab.hidden = false;
+    analystFab.setAttribute('aria-expanded', 'false');
+  }
+  analystFab.addEventListener('click', analystOpen);
+  analystCloseBtn.addEventListener('click', analystCloseFn);
 
   function analystAddMessage(role, text) {
     const empty = analystLog.querySelector('.analyst-empty');
