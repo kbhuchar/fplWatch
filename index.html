@@ -449,23 +449,6 @@
     line-height: 1.5;
     margin: 0;
   }
-  .yt-howto {
-    margin-top: 16px;
-    font-size: 0.8rem;
-    color: var(--ink-secondary);
-    background: var(--surface-2);
-    border-radius: 6px;
-    padding: 14px 16px;
-    line-height: 1.7;
-  }
-  .yt-howto code {
-    font-family: "JetBrains Mono", monospace;
-    font-size: 0.78em;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 1px 5px;
-  }
 
   footer {
     margin-top: 56px;
@@ -568,15 +551,6 @@
       <span class="sub">Not linked yet</span>
     </div>
     <div class="yt-grid" id="yt-grid"></div>
-    <div class="yt-howto">
-      Once a creator's team ID is linked, this section compares their squad against
-      every league member: average squad overlap, captain-match rate, and chip/transfer
-      timing, gameweek by gameweek.<br><br>
-      <b>To link one:</b> open one of their team-reveal videos (or their team page if public),
-      find the number in the URL after <code>/entry/</code>, then add it to the
-      <code>YOUTUBERS</code> dict in <code>fetch_fpl.py</code> and rerun
-      <code>python fetch_fpl.py &amp;&amp; python build_dashboard.py</code>.
-    </div>
   </section>
 
   <footer>
