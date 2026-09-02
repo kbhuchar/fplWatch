@@ -286,7 +286,11 @@ def main():
     profiles = {
         "league_name": data["league_name"],
         "current_gw": current_gw,
-        "managers": build_manager_profiles(league_managers, youtuber_managers, players, current_gw),
+        "available_gws": available_gws,
+        "by_gw": {
+            gw: {"managers": build_manager_profiles(league_managers, youtuber_managers, players, gw)}
+            for gw in available_gws
+        },
     }
 
     page_meta = {"current_gw": current_gw}
